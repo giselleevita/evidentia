@@ -1,0 +1,12 @@
+FROM gradle:8.5-jdk17 AS build
+WORKDIR /app
+COPY backend/common ./backend/common
+COPY backend/rating-service ./backend/rating-service
+COPY settings.gradle.kts build.gradle.kts ./
+RUN gradle :backend:rating-service:build -x test --no-daemon
+
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/backend/rating-service/build/libs/*.jar app.jar
+EXPOSE 8082
+ENTRYPOINT ["java", "-jar", "app.jar"]

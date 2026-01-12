@@ -1,0 +1,51 @@
+# Gradle
+.gradle/
+build/
+out/
+**/.gradle/
+**/build/
+**/out/
+
+# Node
+node_modules/
+dist/
+.vite/
+**/node_modules/
+**/dist/
+**/.vite/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Docker volumes
+postgres_*_data/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes
+*.kubeconfig
+
+# Azure
+.azure/

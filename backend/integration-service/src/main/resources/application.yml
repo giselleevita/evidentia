@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: integration-service
+  
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AZURE_AD_ISSUER_URI:https://login.microsoftonline.com/{tenant-id}/v2.0}
+          jwk-set-uri: ${AZURE_AD_JWK_SET_URI:}
+
+server:
+  port: ${SERVER_PORT:8084}
+
+logging:
+  level:
+    com.evidentia: DEBUG
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# OpenAPI/Swagger
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
