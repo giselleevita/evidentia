@@ -54,3 +54,8 @@ All services implement multi-tenancy with tenant isolation at the data layer. Te
 - RBAC via Azure AD App Roles
 - All endpoints authenticated by default
 - Secrets stored in Azure Key Vault
+
+## Draft Extensions
+
+- `PLUGIN_SYSTEM_DESIGN.md` — plugin architecture boundaries and runtime contract
+- `WEBHOOK_API_DRAFT.md` — webhook subscription API draft and delivery model
