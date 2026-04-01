@@ -22,6 +22,13 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
+    // Persistence — Flyway + JPA (replaces InMemoryIntegrationRepository)
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.flywaydb:flyway-core")
+    runtimeOnly("org.postgresql:postgresql")
+
+    // Scheduled webhook dispatcher
+    implementation("org.springframework.boot:spring-boot-starter-scheduling")
 springBoot {
     mainClass.set("com.evidentia.integration.IntegrationServiceApplicationKt")
 }

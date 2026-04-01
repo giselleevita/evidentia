@@ -7,6 +7,11 @@ spring:
     username: ${DATABASE_USERNAME:evidentia}
     password: ${DATABASE_PASSWORD:evidentia}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT_MS:30000}
+      idle-timeout: ${DB_IDLE_TIMEOUT_MS:600000}
   
   jpa:
     hibernate:
@@ -28,9 +33,16 @@ spring:
         jwt:
           issuer-uri: ${AZURE_AD_ISSUER_URI:https://login.microsoftonline.com/{tenant-id}/v2.0}
           jwk-set-uri: ${AZURE_AD_JWK_SET_URI:}
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
 
 server:
   port: ${SERVER_PORT:8082}
+  shutdown: graceful
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/json,application/xml,text/html,text/plain,text/css,application/javascript
 
 logging:
   level:

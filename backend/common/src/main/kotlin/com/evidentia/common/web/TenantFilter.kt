@@ -27,8 +27,19 @@ class TenantFilter : OncePerRequestFilter() {
                 val tenantId = jwt.getClaimAsString("tid") 
                     ?: jwt.getClaimAsString("tenant_id")
                     ?: jwt.getClaimAsString("tenantId")
-                
-                tenantId?.let { TenantContext.setTenantId(it) }
+
+                if (tenantId.isNullOrBlank()) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Tenant claim required")
+                    return
+                }
+
+                val requestedTenantId = request.getHeader("X-Tenant-Id")
+                if (!requestedTenantId.isNullOrBlank() && requestedTenantId != tenantId) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "Tenant header mismatch")
+                    return
+                }
+
+                TenantContext.setTenantId(tenantId)
             }
             
             filterChain.doFilter(request, response)

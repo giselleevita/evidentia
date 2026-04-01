@@ -8,9 +8,36 @@ spring:
         jwt:
           issuer-uri: ${AZURE_AD_ISSUER_URI:https://login.microsoftonline.com/{tenant-id}/v2.0}
           jwk-set-uri: ${AZURE_AD_JWK_SET_URI:}
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+
+  datasource:
+    url: ${INTEGRATION_DB_URL:jdbc:postgresql://localhost:5432/evidentia_integration}
+    username: ${INTEGRATION_DB_USER:evidentia}
+    password: ${INTEGRATION_DB_PASS:changeme}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
 
 server:
   port: ${SERVER_PORT:8084}
+  shutdown: graceful
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/json,application/xml,text/html,text/plain,text/css,application/javascript
 
 logging:
   level:
