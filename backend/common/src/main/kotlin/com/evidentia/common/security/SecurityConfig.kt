@@ -1,12 +1,14 @@
 package com.evidentia.common.security
 
 import com.evidentia.common.web.TenantFilter
+import com.evidentia.common.web.RateLimitFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
@@ -31,7 +33,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfig(
-    private val tenantFilter: TenantFilter
+    private val tenantFilter: TenantFilter,
+    private val rateLimitFilter: RateLimitFilter,
 ) {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -53,6 +56,7 @@ class SecurityConfig(
                     .anyRequest().authenticated()
             }
             .oauth2ResourceServer { it.jwt { } }
+            .addFilterAfter(rateLimitFilter, BearerTokenAuthenticationFilter::class.java)
             // Add tenant filter after JWT authentication
             .addFilterAfter(tenantFilter, UsernamePasswordAuthenticationFilter::class.java)
         
