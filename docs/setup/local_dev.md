@@ -13,12 +13,15 @@
 
 ```bash
 cd infra/docker
-docker-compose up -d
+docker compose up -d
 ```
 
 This starts:
-- PostgreSQL for evidence service (port 5432)
+- PostgreSQL for evidence service (port 15432)
 - PostgreSQL for audit log service (port 5433)
+- PostgreSQL for incident service (port 5434)
+- PostgreSQL for rating service (port 5435)
+- PostgreSQL for integration service (port 5436)
 - Redis (port 6379)
 
 ### 2. Configure Azure AD
@@ -37,13 +40,16 @@ export AZURE_AD_JWK_SET_URI="https://login.microsoftonline.com/{tenant-id}/disco
 
 ```bash
 # Evidence Service
-./gradlew :backend:evidence-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence gradle :backend:evidence-service:bootRun
 
 # Audit Log Service (in another terminal)
-./gradlew :backend:audit-log-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit gradle :backend:audit-log-service:bootRun
 
-# Integration Service (optional)
-./gradlew :backend:integration-service:bootRun
+# Integration Service (in another terminal)
+INTEGRATION_DB_URL=jdbc:postgresql://localhost:5436/evidentia_integration \
+INTEGRATION_DB_USER=evidentia \
+INTEGRATION_DB_PASS=evidentia \
+gradle :backend:integration-service:bootRun
 ```
 
 ### 4. Run Frontend
@@ -60,15 +66,15 @@ Migrations run automatically via Flyway on service startup.
 
 To manually run migrations:
 ```bash
-./gradlew :backend:evidence-service:flywayMigrate
-./gradlew :backend:audit-log-service:flywayMigrate
+gradle :backend:evidence-service:flywayMigrate
+gradle :backend:audit-log-service:flywayMigrate
 ```
 
 ## Testing
 
 ### Backend
 ```bash
-./gradlew test
+gradle test
 ```
 
 ### Frontend
@@ -82,7 +88,9 @@ npm test
 ### Port Conflicts
 - Evidence Service: 8080
 - Audit Log Service: 8081
-- Integration Service: 8082
+- Rating Service: 8082
+- Incident Service: 8083
+- Integration Service: 8084
 - Frontend: 5173
 
 ### Database Connection Issues

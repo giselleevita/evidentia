@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - name: Validate local orchestration
+        run: |
+          bash -n start.sh start-backend-services.sh stop.sh
+          docker compose -f infra/docker/docker-compose.yml config --quiet
       - uses: actions/setup-java@v5
         with:
           java-version: "17"

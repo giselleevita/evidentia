@@ -1,6 +1,12 @@
-# evidentia
+# Evidentia
+
+[![CI](https://github.com/giselleevita/evidentia/actions/workflows/ci.yml/badge.svg)](https://github.com/giselleevita/evidentia/actions/workflows/ci.yml)
 
 Evidentia is a compliance infrastructure reference implementation for turning existing IT and security activity into reviewable evidence.
+
+It demonstrates lifecycle-driven evidence management, tenant-aware service boundaries,
+correlated audit events, incident workflows, and external integration patterns in a
+Kotlin/Spring Boot and React monorepo.
 
 ## Architecture
 
@@ -48,9 +54,9 @@ evidentia/
 
 ## Quick Start
 
-### ⚡ Easiest Way to Start
+### Easiest Way to Start
 
-**Start everything with one command:**
+**Start the local infrastructure, five backend services, and frontend with one command:**
 ```bash
 ./start.sh
 ```
@@ -79,7 +85,7 @@ Then open: **http://localhost:5173**
 1. **Start infrastructure services:**
 ```bash
 cd infra/docker
-docker-compose up -d
+docker compose up -d
 ```
 
 2. **Configure Azure AD** (see [Local Dev Setup](docs/setup/local_dev.md))
@@ -87,13 +93,13 @@ docker-compose up -d
 3. **Run backend services:**
 ```bash
 # Evidence Service (port 8080)
-./gradlew :backend:evidence-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence gradle :backend:evidence-service:bootRun
 
 # Audit Log Service (port 8081) - in another terminal
-./gradlew :backend:audit-log-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit gradle :backend:audit-log-service:bootRun
 
 # Incident Service (port 8083) - in another terminal
-./gradlew :backend:incident-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:5434/evidentia_incident gradle :backend:incident-service:bootRun
 ```
 
 4. **Run frontend:**
@@ -108,11 +114,11 @@ See [Local Development Guide](docs/setup/local_dev.md) for detailed setup instru
 ## Development
 
 ### Running Tests
-- **Backend**: `./gradlew test` (runs tests for all services)
+- **Backend**: `gradle test` (runs tests for all services)
 - **Frontend**: `cd frontend/compliance-portal && npm test`
 
 ### Building
-- **Backend**: `./gradlew build`
+- **Backend**: `gradle build`
 - **Frontend**: `cd frontend/compliance-portal && npm run build`
 
 ### Database Migrations
@@ -121,7 +127,9 @@ Migrations run automatically via Flyway on service startup. Each service has its
 ## Key Features
 
 ### Multi-Tenancy
-All services implement tenant isolation. Every entity includes `tenantId`, and all queries are automatically filtered by tenant. Tenant ID is extracted from JWT tokens (`tid` or `tenant_id` claim).
+Domain entities and repository interfaces carry tenant identifiers, and tenant context is
+extracted from JWT claims. This reference implementation requires additional authorization
+and isolation testing before production use.
 
 ### Audit Logging
 Every write operation emits an immutable audit event to the audit-log-service with:
@@ -145,11 +153,9 @@ See [RBAC Documentation](docs/architecture/RBAC.md) for role definitions and per
 
 ## CI/CD
 
-CI pipelines are defined in `infra/pipelines/`. The pipeline:
-- Runs tests for changed services (path-based triggers)
-- Builds Docker images
-- Performs security scans
-- Deploys to staging/production
+The active GitHub Actions workflow compiles and tests the backend and builds the frontend.
+An expanded pipeline template is available in `infra/pipelines/` as a reference for image
+builds and deployment automation; it is not an active production deployment pipeline.
 
 See [Azure Deployment Guide](docs/setup/azure_deployment.md) for production deployment.
 
@@ -171,4 +177,4 @@ See [Azure Deployment Guide](docs/setup/azure_deployment.md) for production depl
 
 ## License
 
-[Add license information]
+No open-source license has been selected. Treat the source as all rights reserved.
