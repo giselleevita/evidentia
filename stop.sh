@@ -12,11 +12,12 @@ pkill -f "rating-service:bootRun" 2>/dev/null && echo "  ✅ Rating Service stop
 pkill -f "evidence-service:bootRun" 2>/dev/null && echo "  ✅ Evidence Service stopped" || echo "  ⚠️  Evidence Service not running"
 pkill -f "audit-log-service:bootRun" 2>/dev/null && echo "  ✅ Audit Service stopped" || echo "  ⚠️  Audit Service not running"
 pkill -f "incident-service:bootRun" 2>/dev/null && echo "  ✅ Incident Service stopped" || echo "  ⚠️  Incident Service not running"
+pkill -f "integration-service:bootRun" 2>/dev/null && echo "  ✅ Integration Service stopped" || echo "  ⚠️  Integration Service not running"
 
 echo ""
 echo "Stopping Docker containers..."
 cd infra/docker
-docker-compose down
+docker compose down
 echo "  ✅ Docker containers stopped"
 
 echo ""

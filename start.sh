@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Evidentia - Easy Start Script
-# This script starts everything you need to run the application
+# This script starts the local infrastructure, backend services, and frontend.
 
 set -e
 
@@ -21,36 +21,12 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
-# Check for port conflicts
-echo -e "${BLUE}Checking for port conflicts...${NC}"
-PORT_5432=$(lsof -ti:5432 2>/dev/null)
-if [ ! -z "$PORT_5432" ]; then
-    echo -e "${YELLOW}⚠️  Port 5432 is already in use!${NC}"
-    echo "This is usually PostgreSQL. Trying to stop it..."
-    kill -9 $PORT_5432 2>/dev/null && sleep 2
-    if lsof -ti:5432 > /dev/null 2>&1; then
-        echo -e "${RED}❌ Could not free port 5432.${NC}"
-        echo "Please manually stop the process using port 5432"
-        echo "Or manually stop PostgreSQL on port 5432"
-        exit 1
-    else
-        echo -e "${GREEN}✅ Port 5432 freed${NC}"
-    fi
-fi
-
 # Step 1: Start Docker containers
 echo -e "${BLUE}Step 1: Starting databases and infrastructure...${NC}"
 cd infra/docker
 
-# Try to start, if port conflict, suggest fix
-if ! docker-compose up -d 2>&1 | grep -q "port is already allocated"; then
-    docker-compose up -d
-    echo -e "${GREEN}✅ Infrastructure started${NC}"
-else
-    echo -e "${RED}❌ Port conflict detected!${NC}"
-    echo "Please manually stop the process using the conflicting port"
-    exit 1
-fi
+docker compose up -d
+echo -e "${GREEN}✅ Infrastructure started${NC}"
 echo ""
 
 # Step 2: Wait for databases to be ready
@@ -65,18 +41,29 @@ echo -e "${BLUE}Step 3: Starting backend services...${NC}"
 
 # Start Rating Service
 echo "   Starting Rating Service (port 8082)..."
-./gradlew :backend:rating-service:bootRun > /tmp/rating-service.log 2>&1 &
+DATABASE_URL=jdbc:postgresql://localhost:5435/evidentia_rating gradle :backend:rating-service:bootRun > /tmp/rating-service.log 2>&1 &
 RATING_PID=$!
 
 # Start Evidence Service
 echo "   Starting Evidence Service (port 8080)..."
-./gradlew :backend:evidence-service:bootRun > /tmp/evidence-service.log 2>&1 &
+DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence gradle :backend:evidence-service:bootRun > /tmp/evidence-service.log 2>&1 &
 EVIDENCE_PID=$!
 
 # Start Audit Log Service
 echo "   Starting Audit Log Service (port 8081)..."
-./gradlew :backend:audit-log-service:bootRun > /tmp/audit-service.log 2>&1 &
+DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit gradle :backend:audit-log-service:bootRun > /tmp/audit-service.log 2>&1 &
 AUDIT_PID=$!
+
+echo "   Starting Incident Service (port 8083)..."
+DATABASE_URL=jdbc:postgresql://localhost:5434/evidentia_incident gradle :backend:incident-service:bootRun > /tmp/incident-service.log 2>&1 &
+INCIDENT_PID=$!
+
+echo "   Starting Integration Service (port 8084)..."
+INTEGRATION_DB_URL=jdbc:postgresql://localhost:5436/evidentia_integration \
+INTEGRATION_DB_USER=evidentia \
+INTEGRATION_DB_PASS=evidentia \
+gradle :backend:integration-service:bootRun > /tmp/integration-service.log 2>&1 &
+INTEGRATION_PID=$!
 
 echo -e "${GREEN}✅ Backend services starting (running in background)${NC}"
 echo ""
@@ -100,11 +87,15 @@ echo "📍 Frontend: http://localhost:5173"
 echo "📍 Rating Service: http://localhost:8082"
 echo "📍 Evidence Service: http://localhost:8080"
 echo "📍 Audit Log Service: http://localhost:8081"
+echo "📍 Incident Service: http://localhost:8083"
+echo "📍 Integration Service: http://localhost:8084"
 echo ""
 echo -e "${YELLOW}📝 Backend service logs:${NC}"
 echo "   - Rating Service: tail -f /tmp/rating-service.log"
 echo "   - Evidence Service: tail -f /tmp/evidence-service.log"
 echo "   - Audit Service: tail -f /tmp/audit-service.log"
+echo "   - Incident Service: tail -f /tmp/incident-service.log"
+echo "   - Integration Service: tail -f /tmp/integration-service.log"
 echo ""
 echo "✨ Features:"
 echo "   - Exit button in header (top-right)"
