@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useEvidence, useSubmitEvidence, useApproveEvidence, useRejectEvidence, useLockEvidence } from '../hooks/useEvidence';
 import { useState } from 'react';
 import './EvidenceDetail.css';
@@ -13,7 +13,6 @@ const statusColors: Record<string, string> = {
 
 export const EvidenceDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { data: evidence, isLoading, error } = useEvidence(id || '');
   const submitEvidence = useSubmitEvidence();
   const approveEvidence = useApproveEvidence();

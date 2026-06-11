@@ -1,6 +1,6 @@
 # evidentia
 
-Evidentia is an enterprise-grade compliance infrastructure platform that turns existing IT and security activity into continuous, audit-ready evidence.
+Evidentia is a compliance infrastructure reference implementation for turning existing IT and security activity into reviewable evidence.
 
 ## Architecture
 
@@ -13,6 +13,12 @@ Evidentia is an enterprise-grade compliance infrastructure platform that turns e
 - **Database**: PostgreSQL with Flyway migrations (separate DBs per service)
 - **Auth**: Azure Entra ID (OIDC) with RBAC
 - **Infrastructure**: Docker Compose (local), Azure AKS (production), Terraform (IaC)
+
+## Project Status
+
+This repository demonstrates a multi-service architecture and local workflow. It is not
+production hardened. Authentication, tenant isolation, integrations, migrations, and
+deployment controls require independent validation before real-world use.
 
 ## Repository Structure
 
