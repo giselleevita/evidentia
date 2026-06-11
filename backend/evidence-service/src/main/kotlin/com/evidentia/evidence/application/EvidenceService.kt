@@ -1,6 +1,7 @@
 package com.evidentia.evidence.application
 
 import com.evidentia.common.domain.AuditEvent
+import com.evidentia.common.domain.Result
 import com.evidentia.common.domain.TenantId
 import com.evidentia.evidence.domain.Evidence
 import com.evidentia.evidence.domain.EvidenceId
