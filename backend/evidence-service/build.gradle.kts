@@ -22,7 +22,6 @@ dependencies {
     // Database
     implementation("org.postgresql:postgresql:42.7.0")
     implementation("org.flywaydb:flyway-core:9.22.1")
-    implementation("org.flywaydb:flyway-database-postgresql")
     
     // OpenAPI/Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
