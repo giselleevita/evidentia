@@ -40,8 +40,9 @@ class WebhookSubscriptionService(
     fun pause(id: UUID, tenantId: String): WebhookSubscription {
         val entity = subRepo.findById(id).orElseThrow { NoSuchElementException("Subscription $id not found") }
         require(entity.tenantId == tenantId) { "Forbidden" }
-        val updated = entity.copy(status = WebhookStatus.PAUSED.name, updatedAt = Instant.now())
-        return toDomain(subRepo.save(updated))
+        entity.status = WebhookStatus.PAUSED.name
+        entity.updatedAt = Instant.now()
+        return toDomain(subRepo.save(entity))
     }
 
     @Transactional

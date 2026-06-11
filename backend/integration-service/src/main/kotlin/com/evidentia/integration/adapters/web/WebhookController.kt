@@ -34,33 +34,33 @@ class WebhookController(private val svc: WebhookSubscriptionService) {
     @GetMapping
     @PreAuthorize("hasAnyRole('Admin', 'Auditor')")
     fun list(): ApiResponse<List<WebhookDto>> {
-        val tenantId = TenantContext.current()
+        val tenantId = TenantContext.getTenantIdOrThrow().value
         val items = svc.listForTenant(tenantId).map(::toDto)
-        return ApiResponse.ok(items)
+        return ApiResponse.success(items)
     }
 
     @PostMapping
     @PreAuthorize("hasRole('Admin')")
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Valid @RequestBody req: CreateWebhookRequest): ApiResponse<WebhookDto> {
-        val tenantId = TenantContext.current()
+        val tenantId = TenantContext.getTenantIdOrThrow().value
         val sub = svc.create(tenantId, req.targetUrl, req.eventTypes)
-        return ApiResponse.ok(toDto(sub))
+        return ApiResponse.success(toDto(sub))
     }
 
     @PatchMapping("/{id}/pause")
     @PreAuthorize("hasRole('Admin')")
     fun pause(@PathVariable id: UUID): ApiResponse<WebhookDto> {
-        val tenantId = TenantContext.current()
+        val tenantId = TenantContext.getTenantIdOrThrow().value
         val sub = svc.pause(id, tenantId)
-        return ApiResponse.ok(toDto(sub))
+        return ApiResponse.success(toDto(sub))
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('Admin')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(@PathVariable id: UUID) {
-        val tenantId = TenantContext.current()
+        val tenantId = TenantContext.getTenantIdOrThrow().value
         svc.delete(id, tenantId)
     }
 
