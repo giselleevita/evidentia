@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useIncident, useEscalateIncident, useResolveIncident, useReviewIncident } from '../hooks/useIncidents';
 import { useState } from 'react';
 import './IncidentDetail.css';
@@ -18,7 +18,6 @@ const severityColors: Record<string, string> = {
 
 export const IncidentDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { data: incident, isLoading, error } = useIncident(id || '');
   const escalateIncident = useEscalateIncident();
   const resolveIncident = useResolveIncident();

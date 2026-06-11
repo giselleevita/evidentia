@@ -1,5 +1,4 @@
 import { apiClient } from './client';
-import type { ApiResponse } from './client';
 
 export interface Incident {
   id: string;

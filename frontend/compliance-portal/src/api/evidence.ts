@@ -1,5 +1,5 @@
 import { apiClient } from './client';
-import { Evidence, CreateEvidenceRequest, UpdateEvidenceStatusRequest, EvidenceSchema, ApiResponseSchema } from '../types/evidence';
+import { Evidence, CreateEvidenceRequest, EvidenceSchema, ApiResponseSchema } from '../types/evidence';
 import { z } from 'zod';
 
 const EvidenceResponseSchema = ApiResponseSchema(EvidenceSchema);
