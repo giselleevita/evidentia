@@ -22,7 +22,7 @@ class WebhookSubscriptionEntity(
     val eventTypes: Set<String> = emptySet(),
 
     @Column(nullable = false)
-    val status: String = "ACTIVE",
+    var status: String = "ACTIVE",
 
     @Column(nullable = false)
     val secret: String = "",
