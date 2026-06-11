@@ -47,7 +47,7 @@ class RateLimitFilter : OncePerRequestFilter() {
         }
 
         if (q.size >= maxRequests) {
-            response.status = HttpServletResponse.SC_TOO_MANY_REQUESTS
+            response.status = 429
             response.contentType = "application/json"
             response.setHeader("Retry-After", windowSeconds.toString())
             response.setHeader("X-RateLimit-Limit", maxRequests.toString())
