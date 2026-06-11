@@ -161,7 +161,7 @@ class IncidentController(
             id = incidentId,
             tenantId = TenantId(tenantId),
             request = EscalateIncidentRequest(request.escalationNote),
-            resolvedBy = actor,
+            actor = actor,
             correlationId = corrId
         )
         
@@ -201,7 +201,7 @@ class IncidentController(
             id = incidentId,
             tenantId = TenantId(tenantId),
             request = ResolveIncidentRequest(request.resolutionNote),
-            reviewer = actor,
+            resolvedBy = actor,
             correlationId = corrId
         )
         
@@ -241,7 +241,7 @@ class IncidentController(
             id = incidentId,
             tenantId = TenantId(tenantId),
             request = ReviewIncidentRequest(request.reviewNotes),
-            actor = actor,
+            reviewer = actor,
             correlationId = corrId
         )
         
