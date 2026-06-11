@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
+    kotlin("plugin.jpa")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
 }
@@ -17,18 +18,15 @@ dependencies {
     
     // OpenAPI/Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
-    
-    // Testing
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-}
 
-    // Persistence — Flyway + JPA (replaces InMemoryIntegrationRepository)
+    // Persistence
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.flywaydb:flyway-core")
     runtimeOnly("org.postgresql:postgresql")
 
-    // Scheduled webhook dispatcher
-    implementation("org.springframework.boot:spring-boot-starter-scheduling")
+    // Testing
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
 springBoot {
     mainClass.set("com.evidentia.integration.IntegrationServiceApplicationKt")
 }
