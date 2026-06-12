@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.jpa")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
-    id("org.flywaydb.flyway") version "10.0.0"
+    id("org.flywaydb.flyway") version "12.8.1"
 }
 
 dependencies {
