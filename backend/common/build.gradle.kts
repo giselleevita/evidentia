@@ -11,7 +11,7 @@ java {
 }
 
 dependencies {
-    api(platform("org.springframework.boot:spring-boot-dependencies:3.2.0"))
+    api(platform("org.springframework.boot:spring-boot-dependencies:3.5.15"))
 
     // Kotlin
     implementation("org.jetbrains.kotlin:kotlin-reflect")

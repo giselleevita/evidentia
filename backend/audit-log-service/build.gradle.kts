@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.jpa")
     id("org.springframework.boot")
     id("io.spring.dependency-management")
-    id("org.flywaydb.flyway") version "10.0.0"
+    id("org.flywaydb.flyway") version "10.22.0"
 }
 
 dependencies {
@@ -19,11 +19,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     
     // Database
-    implementation("org.postgresql:postgresql:42.7.0")
-    implementation("org.flywaydb:flyway-core:9.22.1")
+    implementation("org.postgresql:postgresql:42.7.11")
+    implementation("org.flywaydb:flyway-core:9.22.3")
     
     // OpenAPI/Swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.17")
     
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
