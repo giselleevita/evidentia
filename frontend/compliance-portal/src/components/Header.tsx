@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { logout } from '../auth/auth';
 import './Header.css';
@@ -7,25 +6,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 export const Header = () => {
   const location = useLocation();
-
-  useEffect(() => {
-    // Add keyboard shortcuts for easy logout
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ctrl+Q / Cmd+Q - Quick logout
-      if ((e.ctrlKey || e.metaKey) && e.key === 'q') {
-        e.preventDefault();
-        handleLogout();
-      }
-      // Alt+X - Alternative logout shortcut
-      if (e.altKey && e.key === 'x') {
-        e.preventDefault();
-        handleLogout();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   const handleLogout = () => {
     logout(API_BASE_URL);
@@ -82,7 +62,7 @@ export const Header = () => {
           <button
             onClick={handleLogout}
             className="logout-button"
-            title="Logout (Ctrl+Q / Alt+X)"
+            title="Logout"
           >
             <svg className="logout-icon" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M7 2H4C3.44772 2 3 2.44772 3 3V15C3 15.5523 3.44772 16 4 16H7M12 13L15 10M15 10L12 7M15 10H6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

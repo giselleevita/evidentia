@@ -8,5 +8,7 @@ RUN gradle :backend:incident-service:build -x test --no-daemon
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/backend/incident-service/build/libs/*.jar app.jar
+RUN addgroup -S app && adduser -S app -G app
+USER app
 EXPOSE 8083
 ENTRYPOINT ["java", "-jar", "app.jar"]

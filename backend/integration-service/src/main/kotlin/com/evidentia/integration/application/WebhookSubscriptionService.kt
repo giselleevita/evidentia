@@ -16,6 +16,7 @@ import java.util.*
 class WebhookSubscriptionService(
     private val subRepo: WebhookSubscriptionJpaRepository,
     private val deliveryRepo: WebhookDeliveryJpaRepository,
+    private val targetValidator: WebhookTargetValidator,
 ) {
     private val rng = SecureRandom()
 
@@ -24,6 +25,7 @@ class WebhookSubscriptionService(
 
     @Transactional
     fun create(tenantId: String, targetUrl: String, eventTypes: Set<String>): WebhookSubscription {
+        targetValidator.validate(targetUrl)
         val secret = generateSecret()
         val entity = WebhookSubscriptionEntity(
             id = UUID.randomUUID(),

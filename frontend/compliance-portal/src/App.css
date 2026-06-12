@@ -130,3 +130,9 @@ main {
     padding: var(--spacing-md);
   }
 }
+.auth-status {
+  max-width: 640px;
+  margin: 15vh auto;
+  padding: 2rem;
+  text-align: center;
+}

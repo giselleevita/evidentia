@@ -19,6 +19,7 @@ import javax.crypto.spec.SecretKeySpec
 class WebhookDispatchService(
     private val deliveryRepo: WebhookDeliveryJpaRepository,
     private val subRepo: WebhookSubscriptionJpaRepository,
+    private val targetValidator: WebhookTargetValidator,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
     private val http = RestClient.create()
@@ -30,6 +31,7 @@ class WebhookDispatchService(
         for (delivery in pending) {
             val sub = subRepo.findById(delivery.subscriptionId).orElse(null) ?: continue
             try {
+                targetValidator.validate(sub.targetUrl)
                 val sig = hmacSha256(sub.secret, delivery.payloadJson)
                 val resp = http.post()
                     .uri(sub.targetUrl)

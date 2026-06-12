@@ -1,3 +1,6 @@
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.9.20" apply false
     id("org.jetbrains.kotlin.plugin.spring") version "1.9.20" apply false
@@ -15,4 +18,10 @@ allprojects {
 subprojects {
     group = "com.evidentia"
     version = "0.0.1-SNAPSHOT"
+
+    plugins.withId("java") {
+        extensions.configure<JavaPluginExtension> {
+            toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+        }
+    }
 }

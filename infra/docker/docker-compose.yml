@@ -1,6 +1,6 @@
 services:
   postgres-evidence:
-    image: postgres:16-alpine
+    image: postgres:16.14-alpine3.22
     environment:
       POSTGRES_DB: evidentia_evidence
       POSTGRES_USER: evidentia
@@ -16,7 +16,7 @@ services:
       retries: 5
 
   postgres-audit:
-    image: postgres:16-alpine
+    image: postgres:16.14-alpine3.22
     environment:
       POSTGRES_DB: evidentia_audit
       POSTGRES_USER: evidentia
@@ -32,7 +32,7 @@ services:
       retries: 5
 
   postgres-incident:
-    image: postgres:16-alpine
+    image: postgres:16.14-alpine3.22
     environment:
       POSTGRES_DB: evidentia_incident
       POSTGRES_USER: evidentia
@@ -48,7 +48,7 @@ services:
       retries: 5
 
   postgres-rating:
-    image: postgres:16-alpine
+    image: postgres:16.14-alpine3.22
     environment:
       POSTGRES_DB: evidentia_rating
       POSTGRES_USER: evidentia
@@ -64,7 +64,7 @@ services:
       retries: 5
 
   postgres-integration:
-    image: postgres:16-alpine
+    image: postgres:16.14-alpine3.22
     environment:
       POSTGRES_DB: evidentia_integration
       POSTGRES_USER: evidentia
@@ -80,7 +80,7 @@ services:
       retries: 5
 
   redis:
-    image: redis:7-alpine
+    image: redis:7.4.9-alpine3.21
     ports:
       - "6379:6379"
     healthcheck:
