@@ -27,7 +27,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
     
     // Object Storage
-    implementation("com.azure:azure-storage-blob:12.23.0")
+    implementation("com.azure:azure-storage-blob:12.35.0")
     
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
