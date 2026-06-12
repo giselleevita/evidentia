@@ -2,6 +2,7 @@ package com.evidentia.audit.adapters.web
 
 import com.evidentia.audit.application.AuditLogService
 import com.evidentia.common.domain.AuditEvent
+import com.evidentia.common.domain.AuditEventSubmission
 import com.evidentia.common.domain.TenantId
 import com.evidentia.common.context.TenantContext
 import org.springframework.security.access.prepost.PreAuthorize
@@ -18,8 +19,16 @@ class AuditLogController(
 ) {
     @PostMapping("/events")
     @PreAuthorize("hasAnyRole('Admin', 'Service')")
-    fun recordEvent(@RequestBody event: AuditEvent): ResponseEntity<AuditEvent> {
-        val tenantEvent = event.copy(tenantId = TenantContext.getTenantIdOrThrow())
+    fun recordEvent(@RequestBody request: AuditEventSubmission): ResponseEntity<AuditEvent> {
+        val tenantEvent = AuditEvent(
+            tenantId = TenantContext.getTenantIdOrThrow(),
+            actor = request.actor,
+            action = request.action,
+            resourceType = request.resourceType,
+            resourceId = request.resourceId,
+            correlationId = request.correlationId,
+            metadata = request.metadata,
+        )
         auditLogService.recordEvent(tenantEvent)
         return ResponseEntity.ok(tenantEvent)
     }

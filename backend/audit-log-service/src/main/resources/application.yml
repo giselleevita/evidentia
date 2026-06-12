@@ -32,7 +32,6 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${AZURE_AD_ISSUER_URI:https://login.microsoftonline.com/{tenant-id}/v2.0}
-          jwk-set-uri: ${AZURE_AD_JWK_SET_URI:}
   lifecycle:
     timeout-per-shutdown-phase: 20s
 

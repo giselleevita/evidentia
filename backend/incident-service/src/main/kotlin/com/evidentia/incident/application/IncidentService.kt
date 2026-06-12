@@ -8,6 +8,7 @@ import com.evidentia.incident.domain.Incident
 import com.evidentia.incident.domain.IncidentId
 import com.evidentia.incident.domain.IncidentSeverity
 import com.evidentia.incident.domain.IncidentStatus
+import org.springframework.stereotype.Service
 import java.time.Instant
 
 interface IncidentRepository {
@@ -46,6 +47,7 @@ sealed class IncidentError {
     data class ValidationError(val message: String) : IncidentError()
 }
 
+@Service
 class IncidentService(
     private val incidentRepository: IncidentRepository,
     private val auditEventClient: AuditEventClient

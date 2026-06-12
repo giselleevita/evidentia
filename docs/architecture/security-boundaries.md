@@ -16,6 +16,11 @@ remaining boundaries that require deployment-specific work.
   tenant.
 - Audit ingestion requires an `Admin` or internal `Service` role, and the
   persisted tenant is derived from the validated token.
+- Business services acquire OAuth2 client-credentials tokens and attach bearer
+  authentication to audit-log-service requests when service authentication is enabled.
+- API security tests verify that ordinary users cannot inject audit events,
+  conflicting tenant headers are rejected, and service identities can write
+  only to the tenant derived from their validated token.
 - Webhook destinations must use HTTPS and resolve only to public addresses.
 - OpenAPI and Swagger endpoints are disabled unless `OPENAPI_ENABLED=true`.
 - Frontend authentication fails closed unless Azure Entra ID configuration is
@@ -23,9 +28,13 @@ remaining boundaries that require deployment-specific work.
 
 ## Known Limitations
 
-- Service-to-service authentication and authorization are not implemented.
-  Audit delivery currently uses synchronous HTTP and requires deployment-level
-  identity before it is reliable across services.
+- Audit delivery uses authenticated but synchronous, best-effort HTTP. A
+  durable queue and delivery monitoring are still required for production
+  reliability.
+- The current tenancy model treats the validated Entra ID `tid` claim as the
+  Evidentia tenant authority. Deployments requiring multiple application
+  tenants inside one Entra tenant need a different signed tenant claim and
+  authorization model.
 - Audit rows are append-oriented by API design but are not cryptographically
   tamper-evident or protected from privileged database modification.
 - Webhook signing secrets are stored in the integration database and require

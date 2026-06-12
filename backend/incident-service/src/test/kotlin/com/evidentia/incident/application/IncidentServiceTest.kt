@@ -88,6 +88,29 @@ class IncidentServiceTest {
         assertInstanceOf(IncidentError.InvalidState::class.java, failure.error)
     }
 
+    @Test
+    fun `incident is not visible or mutable through another tenant`() {
+        val created = service.createIncident(
+            tenantId,
+            CreateIncidentRequest("Unauthorized access", "Investigate access", IncidentSeverity.HIGH),
+            "reporter@example.com",
+            correlationId
+        ).successValue()
+        val otherTenant = TenantId("tenant-b")
+
+        val read = service.getIncident(created.id, otherTenant)
+        val escalation = service.escalateIncident(
+            created.id,
+            otherTenant,
+            EscalateIncidentRequest("Spoofed escalation"),
+            "attacker@example.com",
+            correlationId,
+        )
+
+        assertEquals(IncidentError.NotFound, assertInstanceOf(Result.Failure::class.java, read).error)
+        assertEquals(IncidentError.NotFound, assertInstanceOf(Result.Failure::class.java, escalation).error)
+    }
+
     private fun Result<Incident, IncidentError>.successValue(): Incident =
         assertInstanceOf(Result.Success::class.java, this).value as Incident
 

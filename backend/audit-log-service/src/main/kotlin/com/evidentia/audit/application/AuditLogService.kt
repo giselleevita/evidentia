@@ -2,6 +2,7 @@ package com.evidentia.audit.application
 
 import com.evidentia.common.domain.AuditEvent
 import com.evidentia.common.domain.TenantId
+import org.springframework.stereotype.Service
 import java.util.UUID
 
 interface AuditLogRepository {
@@ -11,6 +12,7 @@ interface AuditLogRepository {
     fun findByResource(tenantId: TenantId, resourceType: String, resourceId: String): List<AuditEvent>
 }
 
+@Service
 class AuditLogService(
     private val repository: AuditLogRepository
 ) {

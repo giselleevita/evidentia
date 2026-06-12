@@ -5,6 +5,7 @@ import com.evidentia.rating.domain.Rating
 import com.evidentia.rating.domain.RatingId
 import com.evidentia.rating.domain.RatingValue
 import org.springframework.dao.DataIntegrityViolationException
+import org.springframework.stereotype.Service
 import java.util.UUID
 
 interface RatingRepository {
@@ -18,6 +19,7 @@ interface RatingRepository {
     fun getRatingCountForResource(tenantId: TenantId, resourceType: String, resourceId: String): Int
 }
 
+@Service
 class RatingService(
     private val repository: RatingRepository
 ) {

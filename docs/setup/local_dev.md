@@ -33,8 +33,25 @@ This starts:
 2. Set environment variables:
 ```bash
 export AZURE_AD_ISSUER_URI="https://login.microsoftonline.com/{tenant-id}/v2.0"
-export AZURE_AD_JWK_SET_URI="https://login.microsoftonline.com/{tenant-id}/discovery/v2.0/keys"
 ```
+
+3. For authenticated audit delivery, create a confidential client for each
+   calling service, assign it the audit API's `Service` application role, and
+   configure these variables in each calling service process:
+
+```bash
+export EVIDENTIA_SERVICE_AUTH_ENABLED=true
+export SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUDITLOG_CLIENT_ID="<client-id>"
+export SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUDITLOG_CLIENT_SECRET="<client-secret>"
+export SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUDITLOG_AUTHORIZATION_GRANT_TYPE="client_credentials"
+export SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUDITLOG_PROVIDER="auditlog"
+export SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_AUDITLOG_SCOPE="api://<audit-api-client-id>/.default"
+export SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_AUDITLOG_TOKEN_URI="https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token"
+```
+
+Do not commit client secrets. When service authentication is disabled or
+misconfigured, business operations continue but audit delivery fails and is
+logged.
 
 ### 3. Run Backend Services
 
