@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useCreateEvidence } from '../hooks/useEvidence';
 import { CreateEvidenceRequest } from '../types/evidence';
+import { getApiErrorMessage } from '../api/errors';
 import './CreateEvidence.css';
 
 export const CreateEvidence = () => {
@@ -37,9 +38,9 @@ export const CreateEvidence = () => {
     try {
       const evidence = await createEvidence.mutateAsync(formData);
       navigate(`/evidence/${evidence.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to create evidence:', error);
-      setErrors({ submit: error?.response?.data?.error?.message || 'Failed to create evidence' });
+      setErrors({ submit: getApiErrorMessage(error, 'Failed to create evidence') });
     }
   };
 

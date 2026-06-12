@@ -41,28 +41,28 @@ echo -e "${BLUE}Step 3: Starting backend services...${NC}"
 
 # Start Rating Service
 echo "   Starting Rating Service (port 8082)..."
-DATABASE_URL=jdbc:postgresql://localhost:5435/evidentia_rating gradle :backend:rating-service:bootRun > /tmp/rating-service.log 2>&1 &
+DATABASE_URL=jdbc:postgresql://localhost:5435/evidentia_rating ./gradlew :backend:rating-service:bootRun > /tmp/rating-service.log 2>&1 &
 RATING_PID=$!
 
 # Start Evidence Service
 echo "   Starting Evidence Service (port 8080)..."
-DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence gradle :backend:evidence-service:bootRun > /tmp/evidence-service.log 2>&1 &
+DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence ./gradlew :backend:evidence-service:bootRun > /tmp/evidence-service.log 2>&1 &
 EVIDENCE_PID=$!
 
 # Start Audit Log Service
 echo "   Starting Audit Log Service (port 8081)..."
-DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit gradle :backend:audit-log-service:bootRun > /tmp/audit-service.log 2>&1 &
+DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit ./gradlew :backend:audit-log-service:bootRun > /tmp/audit-service.log 2>&1 &
 AUDIT_PID=$!
 
 echo "   Starting Incident Service (port 8083)..."
-DATABASE_URL=jdbc:postgresql://localhost:5434/evidentia_incident gradle :backend:incident-service:bootRun > /tmp/incident-service.log 2>&1 &
+DATABASE_URL=jdbc:postgresql://localhost:5434/evidentia_incident ./gradlew :backend:incident-service:bootRun > /tmp/incident-service.log 2>&1 &
 INCIDENT_PID=$!
 
 echo "   Starting Integration Service (port 8084)..."
 INTEGRATION_DB_URL=jdbc:postgresql://localhost:5436/evidentia_integration \
 INTEGRATION_DB_USER=evidentia \
 INTEGRATION_DB_PASS=evidentia \
-gradle :backend:integration-service:bootRun > /tmp/integration-service.log 2>&1 &
+./gradlew :backend:integration-service:bootRun > /tmp/integration-service.log 2>&1 &
 INTEGRATION_PID=$!
 
 echo -e "${GREEN}✅ Backend services starting (running in background)${NC}"

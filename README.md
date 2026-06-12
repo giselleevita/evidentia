@@ -2,23 +2,38 @@
 
 [![CI](https://github.com/giselleevita/evidentia/actions/workflows/ci.yml/badge.svg)](https://github.com/giselleevita/evidentia/actions/workflows/ci.yml)
 
-Evidentia is a compliance infrastructure reference implementation for turning existing IT and security activity into reviewable evidence.
+Evidentia is a compliance workflow reference implementation for turning existing IT and security activity into reviewable evidence.
 
 It demonstrates lifecycle-driven evidence management, tenant-aware service boundaries,
 correlated audit events, incident workflows, and external integration patterns in a
 Kotlin/Spring Boot and React monorepo.
 
+![Evidentia evidence workflow](docs/images/evidentia-create-evidence.png)
+
 ## Architecture
+
+```mermaid
+flowchart LR
+    User[Authenticated user] --> Portal[React compliance portal]
+    Portal --> Services[Kotlin / Spring Boot services]
+    Services --> Evidence[(Evidence DB)]
+    Services --> Incidents[(Incident DB)]
+    Services --> Ratings[(Rating DB)]
+    Services --> Integrations[(Integration DB)]
+    Services --> Audit[Audit log service]
+    Audit --> AuditDB[(Tenant-scoped audit DB)]
+    Integrations --> Webhooks[Validated HTTPS webhooks]
+```
 
 - **Backend**: Microservices architecture with Kotlin + Spring Boot
   - Evidence Service: Evidence lifecycle management (DRAFT → IN_REVIEW → APPROVED → LOCKED)
-  - Audit Log Service: Centralized immutable audit logging
+  - Audit Log Service: Centralized tenant-scoped audit event storage
   - Incident Service: Security incident tracking and resolution
   - Integration Service: External system integrations (Microsoft 365, GitHub, Jira)
 - **Frontend**: React + TypeScript + Vite (compliance portal)
 - **Database**: PostgreSQL with Flyway migrations (separate DBs per service)
-- **Auth**: Azure Entra ID (OIDC) with RBAC
-- **Infrastructure**: Docker Compose (local), Azure AKS (production), Terraform (IaC)
+- **Auth**: Azure Entra ID-compatible OIDC resource-server and frontend flows
+- **Infrastructure**: Docker Compose locally, with partial Azure/Kubernetes reference templates
 
 ## Project Status
 
@@ -76,9 +91,9 @@ Then open: **http://localhost:5173**
 
 ### Prerequisites
 - JDK 17+
-- Node.js 18+
+- Node.js 20+
 - Docker & Docker Compose
-- Azure CLI (for Azure AD configuration)
+- Azure Entra ID application registration for authenticated end-to-end use
 
 ### Local Development (Manual)
 
@@ -93,13 +108,13 @@ docker compose up -d
 3. **Run backend services:**
 ```bash
 # Evidence Service (port 8080)
-DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence gradle :backend:evidence-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence ./gradlew :backend:evidence-service:bootRun
 
 # Audit Log Service (port 8081) - in another terminal
-DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit gradle :backend:audit-log-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit ./gradlew :backend:audit-log-service:bootRun
 
 # Incident Service (port 8083) - in another terminal
-DATABASE_URL=jdbc:postgresql://localhost:5434/evidentia_incident gradle :backend:incident-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:5434/evidentia_incident ./gradlew :backend:incident-service:bootRun
 ```
 
 4. **Run frontend:**
@@ -114,11 +129,11 @@ See [Local Development Guide](docs/setup/local_dev.md) for detailed setup instru
 ## Development
 
 ### Running Tests
-- **Backend**: `gradle test` (runs tests for all services)
-- **Frontend**: `cd frontend/compliance-portal && npm test`
+- **Backend**: `./gradlew test` (runs tests for all services)
+- **Frontend**: `cd frontend/compliance-portal && npm run lint && npm test -- --run && npm run build`
 
 ### Building
-- **Backend**: `gradle build`
+- **Backend**: `./gradlew build`
 - **Frontend**: `cd frontend/compliance-portal && npm run build`
 
 ### Database Migrations
@@ -132,7 +147,7 @@ extracted from JWT claims. This reference implementation requires additional aut
 and isolation testing before production use.
 
 ### Audit Logging
-Every write operation emits an immutable audit event to the audit-log-service with:
+Business-service write operations are designed to emit audit events to the audit-log-service with:
 - Actor (user)
 - Tenant ID
 - Action
@@ -146,16 +161,19 @@ Every write operation emits an immutable audit event to the audit-log-service wi
 - RBAC via Azure AD App Roles (Admin, Auditor, User)
 - Method-level security with `@PreAuthorize` annotations
 - Automatic tenant context extraction from JWT tokens
-- All endpoints authenticated by default (except `/actuator/health`, `/swagger-ui/**`)
-- Secrets stored in Azure Key Vault (production)
+- All endpoints authenticated by default except health and info endpoints
+- OpenAPI endpoints disabled by default
+- HTTPS-only public webhook targets with private-address rejection
 
-See [RBAC Documentation](docs/architecture/RBAC.md) for role definitions and permissions.
+See [RBAC Documentation](docs/architecture/RBAC.md) and
+[Security Boundaries](docs/architecture/security-boundaries.md) for implemented
+controls and known limitations.
 
 ## CI/CD
 
 The active GitHub Actions workflow compiles and tests the backend and builds the frontend.
-An expanded pipeline template is available in `infra/pipelines/` as a reference for image
-builds and deployment automation; it is not an active production deployment pipeline.
+Container and deployment manifests are reference templates. They are not an
+active production deployment pipeline.
 
 See [Azure Deployment Guide](docs/setup/azure_deployment.md) for production deployment.
 
@@ -177,4 +195,5 @@ See [Azure Deployment Guide](docs/setup/azure_deployment.md) for production depl
 
 ## License
 
-No open-source license has been selected. Treat the source as all rights reserved.
+Copyright (c) 2026 Giselle Evita Koch. See [LICENSE](LICENSE) for the
+proprietary source-available terms.

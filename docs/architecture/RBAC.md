@@ -30,6 +30,12 @@ The platform implements role-based access control using Azure Entra ID (Azure AD
 - View own evidence and incidents
 - Cannot approve evidence or resolve incidents
 
+### Service
+**Internal service identity**
+- Submit tenant-scoped audit events
+- Cannot query audit trails or perform user workflow actions
+- Requires deployment-level service-to-service identity configuration
+
 ## Implementation
 
 ### Azure AD Configuration
@@ -58,6 +64,13 @@ The platform implements role-based access control using Azure Entra ID (Azure AD
        "id": "...",
        "isEnabled": true,
        "value": "User"
+     },
+     {
+       "allowedMemberTypes": ["Application"],
+       "displayName": "Service",
+       "id": "...",
+       "isEnabled": true,
+       "value": "Service"
      }
    ]
    ```
@@ -82,7 +95,9 @@ fun escalateIncident(...) { ... }
 Roles are scoped per tenant:
 - A user with Admin role in Tenant A has no access to Tenant B's data
 - Tenant ID is extracted from JWT token (`tid` claim)
-- All queries automatically filter by tenant ID
+- Resource and audit queries are expected to include the authenticated tenant ID.
+  This is application-layer enforcement and requires regression tests for each
+  new query path.
 
 ## Security Best Practices
 

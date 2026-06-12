@@ -2,7 +2,7 @@
 
 ## Overview
 
-Evidentia is an enterprise-grade compliance infrastructure platform built as a microservices monorepo.
+Evidentia is a compliance workflow reference implementation built as a microservices monorepo.
 
 ## Architecture Decision Records (ADRs)
 
@@ -33,7 +33,7 @@ When creating a new ADR, use this template:
 ### Microservices
 
 - **Evidence Service**: Manages evidence lifecycle (draft → submitted → approved/rejected)
-- **Audit Log Service**: Centralized immutable audit logging
+- **Audit Log Service**: Centralized tenant-scoped audit event storage
 - **Integration Service**: External system integrations (Microsoft 365, GitHub, Jira)
 
 ### Technology Stack
@@ -41,19 +41,21 @@ When creating a new ADR, use this template:
 - **Backend**: Kotlin + Spring Boot
 - **Frontend**: React + TypeScript + Vite
 - **Database**: PostgreSQL (separate databases per service)
-- **Infrastructure**: Azure (AKS, Azure SQL, Key Vault)
+- **Infrastructure**: Docker Compose with partial Azure/Kubernetes reference templates
 - **Auth**: Azure Entra ID (OIDC)
 
 ## Multi-Tenancy
 
-All services implement multi-tenancy with tenant isolation at the data layer. Tenant ID is extracted from JWT tokens and enforced in all queries.
+Tenant ID is extracted from validated JWT tokens and applied to application-layer
+queries. The repository does not currently implement database row-level security.
 
 ## Security
 
 - OAuth2/OIDC with Azure Entra ID
 - RBAC via Azure AD App Roles
 - All endpoints authenticated by default
-- Secrets stored in Azure Key Vault
+- OpenAPI endpoints disabled by default
+- See [Security Boundaries](security-boundaries.md) for limitations
 
 ## Draft Extensions
 

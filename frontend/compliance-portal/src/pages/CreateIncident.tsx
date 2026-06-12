@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCreateIncident } from '../hooks/useIncidents';
+import { getApiErrorMessage } from '../api/errors';
 import './CreateIncident.css';
 
 export const CreateIncident = () => {
@@ -30,9 +31,9 @@ export const CreateIncident = () => {
     try {
       const incident = await createIncident.mutateAsync(formData);
       navigate(`/incidents/${incident.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to create incident:', error);
-      setErrors({ submit: error.message || 'Failed to create incident' });
+      setErrors({ submit: getApiErrorMessage(error, 'Failed to create incident') });
     }
   };
 

@@ -2,6 +2,7 @@ package com.evidentia.common.security
 
 import com.evidentia.common.web.TenantFilter
 import com.evidentia.common.web.RateLimitFilter
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -9,6 +10,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
@@ -35,9 +39,14 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class SecurityConfig(
     private val tenantFilter: TenantFilter,
     private val rateLimitFilter: RateLimitFilter,
+    @Value("\${evidentia.cors.allowed-origins:http://localhost:5173,http://localhost:3000}")
+    private val allowedOrigins: String,
 ) {
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    fun securityFilterChain(
+        http: HttpSecurity,
+        jwtAuthenticationConverter: JwtAuthenticationConverter,
+    ): SecurityFilterChain {
         http
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
@@ -47,29 +56,41 @@ class SecurityConfig(
                     // Public endpoints
                     .requestMatchers(
                         "/actuator/health",
-                        "/actuator/info",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/api-docs/**"
+                        "/actuator/info"
                     ).permitAll()
                     // All other endpoints require authentication
                     .anyRequest().authenticated()
             }
-            .oauth2ResourceServer { it.jwt { } }
+            .oauth2ResourceServer { resourceServer ->
+                resourceServer.jwt { jwt ->
+                    jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
+                }
+            }
             .addFilterAfter(rateLimitFilter, BearerTokenAuthenticationFilter::class.java)
             // Add tenant filter after JWT authentication
             .addFilterAfter(tenantFilter, UsernamePasswordAuthenticationFilter::class.java)
         
         return http.build()
     }
+
+    @Bean
+    fun jwtAuthenticationConverter(): JwtAuthenticationConverter {
+        val scopeConverter = JwtGrantedAuthoritiesConverter()
+        val converter = JwtAuthenticationConverter()
+        converter.setJwtGrantedAuthoritiesConverter { jwt ->
+            val authorities = scopeConverter.convert(jwt)?.toMutableList() ?: mutableListOf()
+            jwt.getClaimAsStringList("roles")
+                .orEmpty()
+                .mapTo(authorities) { SimpleGrantedAuthority("ROLE_$it") }
+            authorities
+        }
+        return converter
+    }
     
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf(
-            "http://localhost:5173",
-            "http://localhost:3000"
-        )
+        configuration.allowedOrigins = allowedOrigins.split(",").map(String::trim).filter(String::isNotBlank)
         configuration.allowedMethods = listOf("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true

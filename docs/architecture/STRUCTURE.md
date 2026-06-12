@@ -1,6 +1,6 @@
 # Project Structure Guide
 
-This document describes the improved enterprise-grade structure of the Evidentia platform.
+This document describes the multi-service structure of the Evidentia reference implementation.
 
 ## Backend Structure
 

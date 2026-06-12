@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - JDK 17+
-- Node.js 18+
+- Node.js 20+
 - Docker & Docker Compose
 - Azure CLI (for Azure AD configuration)
 
@@ -40,16 +40,16 @@ export AZURE_AD_JWK_SET_URI="https://login.microsoftonline.com/{tenant-id}/disco
 
 ```bash
 # Evidence Service
-DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence gradle :backend:evidence-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence ./gradlew :backend:evidence-service:bootRun
 
 # Audit Log Service (in another terminal)
-DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit gradle :backend:audit-log-service:bootRun
+DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit ./gradlew :backend:audit-log-service:bootRun
 
 # Integration Service (in another terminal)
 INTEGRATION_DB_URL=jdbc:postgresql://localhost:5436/evidentia_integration \
 INTEGRATION_DB_USER=evidentia \
 INTEGRATION_DB_PASS=evidentia \
-gradle :backend:integration-service:bootRun
+./gradlew :backend:integration-service:bootRun
 ```
 
 ### 4. Run Frontend
@@ -57,6 +57,7 @@ gradle :backend:integration-service:bootRun
 ```bash
 cd frontend/compliance-portal
 npm install
+npm run lint
 npm run dev
 ```
 
@@ -66,21 +67,23 @@ Migrations run automatically via Flyway on service startup.
 
 To manually run migrations:
 ```bash
-gradle :backend:evidence-service:flywayMigrate
-gradle :backend:audit-log-service:flywayMigrate
+./gradlew :backend:evidence-service:flywayMigrate
+./gradlew :backend:audit-log-service:flywayMigrate
 ```
 
 ## Testing
 
 ### Backend
 ```bash
-gradle test
+./gradlew test
 ```
 
 ### Frontend
 ```bash
 cd frontend/compliance-portal
-npm test
+npm run lint
+npm test -- --run
+npm run build
 ```
 
 ## Troubleshooting

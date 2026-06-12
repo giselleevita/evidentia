@@ -7,8 +7,8 @@ import java.util.UUID
 interface AuditLogRepository {
     fun save(event: AuditEvent)
     fun findByTenantId(tenantId: TenantId, limit: Int = 100): List<AuditEvent>
-    fun findByCorrelationId(correlationId: UUID): List<AuditEvent>
-    fun findByResource(resourceType: String, resourceId: String): List<AuditEvent>
+    fun findByCorrelationId(tenantId: TenantId, correlationId: UUID): List<AuditEvent>
+    fun findByResource(tenantId: TenantId, resourceType: String, resourceId: String): List<AuditEvent>
 }
 
 class AuditLogService(
@@ -22,11 +22,11 @@ class AuditLogService(
         return repository.findByTenantId(tenantId, limit)
     }
     
-    fun getEventsByCorrelationId(correlationId: UUID): List<AuditEvent> {
-        return repository.findByCorrelationId(correlationId)
+    fun getEventsByCorrelationId(tenantId: TenantId, correlationId: UUID): List<AuditEvent> {
+        return repository.findByCorrelationId(tenantId, correlationId)
     }
     
-    fun getEventsByResource(resourceType: String, resourceId: String): List<AuditEvent> {
-        return repository.findByResource(resourceType, resourceId)
+    fun getEventsByResource(tenantId: TenantId, resourceType: String, resourceId: String): List<AuditEvent> {
+        return repository.findByResource(tenantId, resourceType, resourceId)
     }
 }

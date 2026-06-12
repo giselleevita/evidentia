@@ -11,8 +11,12 @@ import java.util.UUID
 @Repository
 interface AuditEventJpaRepository : JpaRepository<AuditEventEntity, UUID> {
     fun findTop100ByTenantIdOrderByTimestampDesc(tenantId: String): List<AuditEventEntity>
-    fun findByCorrelationIdOrderByTimestampAsc(correlationId: UUID): List<AuditEventEntity>
-    fun findByResourceTypeAndResourceIdOrderByTimestampAsc(resourceType: String, resourceId: String): List<AuditEventEntity>
+    fun findByTenantIdAndCorrelationIdOrderByTimestampAsc(tenantId: String, correlationId: UUID): List<AuditEventEntity>
+    fun findByTenantIdAndResourceTypeAndResourceIdOrderByTimestampAsc(
+        tenantId: String,
+        resourceType: String,
+        resourceId: String,
+    ): List<AuditEventEntity>
 }
 
 @Component
@@ -29,13 +33,17 @@ class AuditLogRepositoryAdapter(
             .map { it.toDomain() }
     }
     
-    override fun findByCorrelationId(correlationId: UUID): List<AuditEvent> {
-        return jpaRepository.findByCorrelationIdOrderByTimestampAsc(correlationId)
+    override fun findByCorrelationId(tenantId: TenantId, correlationId: UUID): List<AuditEvent> {
+        return jpaRepository.findByTenantIdAndCorrelationIdOrderByTimestampAsc(tenantId.value, correlationId)
             .map { it.toDomain() }
     }
     
-    override fun findByResource(resourceType: String, resourceId: String): List<AuditEvent> {
-        return jpaRepository.findByResourceTypeAndResourceIdOrderByTimestampAsc(resourceType, resourceId)
+    override fun findByResource(tenantId: TenantId, resourceType: String, resourceId: String): List<AuditEvent> {
+        return jpaRepository.findByTenantIdAndResourceTypeAndResourceIdOrderByTimestampAsc(
+            tenantId.value,
+            resourceType,
+            resourceId,
+        )
             .map { it.toDomain() }
     }
 }
