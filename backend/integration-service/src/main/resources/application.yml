@@ -7,7 +7,6 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${AZURE_AD_ISSUER_URI:https://login.microsoftonline.com/{tenant-id}/v2.0}
-          jwk-set-uri: ${AZURE_AD_JWK_SET_URI:}
   lifecycle:
     timeout-per-shutdown-phase: 20s
 
@@ -38,6 +37,14 @@ server:
     enabled: true
     min-response-size: 1024
     mime-types: application/json,application/xml,text/html,text/plain,text/css,application/javascript
+
+audit-log-service:
+  url: ${AUDIT_LOG_SERVICE_URL:http://localhost:8081}
+  client-registration-id: ${AUDIT_LOG_CLIENT_REGISTRATION_ID:auditlog}
+
+evidentia:
+  service-auth:
+    enabled: ${EVIDENTIA_SERVICE_AUTH_ENABLED:false}
 
 logging:
   level:

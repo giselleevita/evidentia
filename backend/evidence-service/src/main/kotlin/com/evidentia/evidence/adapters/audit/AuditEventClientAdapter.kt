@@ -1,34 +1,33 @@
 package com.evidentia.evidence.adapters.audit
 
 import com.evidentia.common.domain.AuditEvent
+import com.evidentia.common.domain.toSubmission
+import com.evidentia.common.security.AuthenticatedServiceRestClientFactory
 import com.evidentia.evidence.application.AuditEventClient
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
-import org.springframework.web.client.RestClient
 
 @Component
 class AuditEventClientAdapter(
-    @Value("\${audit-log-service.url:http://localhost:8081}") private val auditServiceUrl: String
+    restClientFactory: AuthenticatedServiceRestClientFactory,
+    @Value("\${audit-log-service.url:http://localhost:8081}") auditServiceUrl: String,
+    @Value("\${audit-log-service.client-registration-id:auditlog}") clientRegistrationId: String,
 ) : AuditEventClient {
-    private val restClient = RestClient.builder()
-        .baseUrl(auditServiceUrl)
-        .build()
+    private val log = LoggerFactory.getLogger(javaClass)
+    private val restClient = restClientFactory.create(auditServiceUrl, clientRegistrationId)
     
     override fun save(event: AuditEvent) {
         try {
             restClient.post()
                 .uri("/api/v1/audit/events")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(event)
+                .body(event.toSubmission())
                 .retrieve()
                 .toBodilessEntity()
         } catch (e: Exception) {
-            // Log error but don't fail the main operation
-            // In production, consider using async messaging (Service Bus) for resilience
-            println("Failed to save audit event: ${e.message}")
+            log.error("Failed to deliver audit event {}", event.id, e)
         }
     }
 }

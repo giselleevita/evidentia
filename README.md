@@ -32,7 +32,8 @@ flowchart LR
   - Integration Service: External system integrations (Microsoft 365, GitHub, Jira)
 - **Frontend**: React + TypeScript + Vite (compliance portal)
 - **Database**: PostgreSQL with Flyway migrations (separate DBs per service)
-- **Auth**: Azure Entra ID-compatible OIDC resource-server and frontend flows
+- **Auth**: Azure Entra ID-compatible OIDC resource-server, frontend flows, and
+  OAuth2 client-credentials authentication for internal audit delivery
 - **Infrastructure**: Docker Compose locally, with partial Azure/Kubernetes reference templates
 
 ## Project Status
@@ -161,6 +162,7 @@ Business-service write operations are designed to emit audit events to the audit
 - RBAC via Azure AD App Roles (Admin, Auditor, User)
 - Method-level security with `@PreAuthorize` annotations
 - Automatic tenant context extraction from JWT tokens
+- OAuth2 client-credentials bearer tokens on business-service audit calls
 - All endpoints authenticated by default except health and info endpoints
 - OpenAPI endpoints disabled by default
 - HTTPS-only public webhook targets with private-address rejection

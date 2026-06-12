@@ -3,7 +3,7 @@ package com.evidentia.audit
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = ["com.evidentia"])
 class AuditLogServiceApplication
 
 fun main(args: Array<String>) {

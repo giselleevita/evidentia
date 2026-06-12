@@ -7,6 +7,7 @@ import com.evidentia.integration.domain.Integration
 import com.evidentia.integration.domain.IntegrationId
 import com.evidentia.integration.domain.IntegrationStatus
 import com.evidentia.integration.domain.IntegrationType
+import org.springframework.stereotype.Service
 import java.time.Instant
 
 interface IntegrationRepository {
@@ -39,6 +40,7 @@ sealed class IntegrationError {
     data class ValidationError(val message: String) : IntegrationError()
 }
 
+@Service
 class IntegrationService(
     private val integrationRepository: IntegrationRepository,
     private val auditEventClient: AuditEventClient

@@ -6,6 +6,7 @@ import com.evidentia.common.domain.TenantId
 import com.evidentia.evidence.domain.Evidence
 import com.evidentia.evidence.domain.EvidenceId
 import com.evidentia.evidence.domain.EvidenceStatus
+import org.springframework.stereotype.Service
 import java.time.Instant
 
 interface EvidenceRepository {
@@ -55,6 +56,7 @@ sealed class EvidenceError {
     data class ValidationError(val message: String) : EvidenceError()
 }
 
+@Service
 class EvidenceService(
     private val evidenceRepository: EvidenceRepository,
     private val auditEventClient: AuditEventClient
