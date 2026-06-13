@@ -6,10 +6,10 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          auth: ['@azure/msal-browser'],
-          react: ['react', 'react-dom', 'react-router-dom'],
-          query: ['@tanstack/react-query', 'axios'],
+        manualChunks(id) {
+          if (id.includes('@azure/msal-browser')) return 'auth'
+          if (id.includes('react-router-dom') || id.includes('react-dom') || id.includes('/react/')) return 'react'
+          if (id.includes('@tanstack/react-query') || id.includes('axios')) return 'query'
         },
       },
     },

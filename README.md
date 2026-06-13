@@ -4,6 +4,8 @@
 
 Evidentia is a compliance workflow reference implementation for turning existing IT and security activity into reviewable evidence.
 
+**Private repository — reviewers:** see [docs/REVIEWER_GUIDE.md](docs/REVIEWER_GUIDE.md) for a 15-minute evaluation path (available on request).
+
 It demonstrates lifecycle-driven evidence management, tenant-aware service boundaries,
 correlated audit events, incident workflows, and external integration patterns in a
 Kotlin/Spring Boot and React monorepo.
