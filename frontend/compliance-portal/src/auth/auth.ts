@@ -23,7 +23,6 @@ const getClient = async (): Promise<PublicClientApplication | null> => {
         },
         cache: {
           cacheLocation: 'sessionStorage',
-          storeAuthStateInCookie: false,
         },
       });
       await client.initialize();
