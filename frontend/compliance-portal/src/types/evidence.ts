@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const EvidenceStatusSchema = z.enum(['DRAFT', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'LOCKED']);
 
 export const EvidenceSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   tenantId: z.string(),
   title: z.string(),
   description: z.string(),
@@ -40,7 +40,7 @@ export const ApiResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
     error: z.object({
       code: z.string(),
       message: z.string(),
-      details: z.record(z.any()).optional().nullable(),
+      details: z.record(z.string(), z.unknown()).optional().nullable(),
     }).nullable().optional(),
     timestamp: z.string(),
   });
