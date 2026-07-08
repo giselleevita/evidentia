@@ -1,5 +1,7 @@
 # Evidentia
 
+> **Portfolio note:** Supporting repository. Featured evidence API in the public stack is [proofrail-evidence-api](https://github.com/giselleevita/proofrail-evidence-api).
+
 [![CI](https://github.com/giselleevita/evidentia/actions/workflows/ci.yml/badge.svg)](https://github.com/giselleevita/evidentia/actions/workflows/ci.yml)
 
 Evidentia is a compliance workflow reference implementation for turning existing IT and security activity into reviewable evidence.
