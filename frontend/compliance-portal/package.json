@@ -27,7 +27,7 @@
     "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.4",
+    "eslint-plugin-react-refresh": "^0.5.3",
     "prettier": "^3.9.4",
     "typescript": "^5.2.2",
     "vite": "^8.1.3",
