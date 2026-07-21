@@ -14,8 +14,8 @@
 │  Evidence Service    │  │  Audit Log Service                │
 │  (Kotlin/Spring)     │  │  (Kotlin/Spring)                  │
 │  Port 8080           │  │  Port 8081                        │
-│                      │  │  Immutable append-only             │
-│  Lifecycle:          │  │  Hash-chained records              │
+│                      │  │  Append-only event API             │
+│  Lifecycle:          │  │  Tenant-scoped records             │
 │  DRAFT → IN_REVIEW   │  │                                   │
 │  → APPROVED → LOCKED │  │                                   │
 └──────────┬──────────┘  └───────────────────┬───────────────┘
@@ -43,12 +43,16 @@
 - Database encryption at rest: Azure Storage Service Encryption (AES-256)
 - In transit: TLS 1.2+ enforced on all inter-service and client communication
 
-## Evidence Immutability Guarantee
+## Evidence Immutability
 
 1. **Application layer**: Evidence transitions DRAFT → IN_REVIEW → APPROVED → LOCKED; LOCKED state is terminal
-2. **Audit log layer**: Append-only PostgreSQL table with hash-chained records; each entry includes SHA-256 hash of previous entry
-3. **Database layer**: Application role has INSERT-only permission on audit_log table; UPDATE/DELETE revoked
-4. **Infrastructure layer**: Database backups are immutable (Azure immutable blob storage)
+2. **Audit log layer**: The audit-log-service exposes insert and read endpoints only — no update or delete APIs. Each event is tenant-scoped and carries actor, action, resource type/ID, correlation ID, timestamp, and metadata
+3. **Access control**: Recording events requires the Admin or Service role (business services authenticate via OAuth2 client credentials); reading the audit trail requires Admin or Auditor
+
+Append-only behavior is enforced at the API layer. Database-level restrictions
+(INSERT-only grants), hash-chained records, and immutable backups are not
+implemented in this reference implementation; treat them as hardening work for
+a production deployment.
 
 ## Azure Entra Integration
 
