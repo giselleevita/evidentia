@@ -1,6 +1,6 @@
 # Evidentia — Reviewer Guide
 
-**Private repository — available on request.** This guide helps recruiters and senior engineers evaluate the project in about 15 minutes without needing production credentials.
+This guide helps recruiters and senior engineers evaluate the project in about 15 minutes without needing production credentials.
 
 ## What problem it demonstrates
 
@@ -35,7 +35,7 @@ Full setup: [docs/setup/local_dev.md](setup/local_dev.md)
 | 1 | `backend/evidence-service/` domain + API | Evidence lifecycle and tenant scoping |
 | 2 | `backend/audit-log-service/` | Centralized, tenant-scoped audit events |
 | 3 | `frontend/compliance-portal/src/` | Portal flows for evidence and incidents |
-| 4 | `shared/dto/` or OpenAPI specs | Contract discipline across services |
+| 4 | `backend/common/` | Shared domain models, security config, and tenant context used by all services |
 | 5 | `.github/workflows/ci.yml` | Backend + frontend build gates |
 
 **Tests to skim:**
@@ -46,7 +46,3 @@ Full setup: [docs/setup/local_dev.md](setup/local_dev.md)
 
 - **Is:** A multi-service reference implementation with realistic compliance boundaries
 - **Is not:** Production-hardened or certified for regulated deployment without further validation
-
-## Request access
-
-Contact via GitHub profile or portfolio site. Reviewers typically receive read access plus this guide and the main README.
