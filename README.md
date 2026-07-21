@@ -1,7 +1,5 @@
 # Evidentia
 
-> **Portfolio note:** Supporting repository. Featured evidence API in the public stack is [proofrail-evidence-api](https://github.com/giselleevita/proofrail-evidence-api).
-
 [![CI](https://github.com/giselleevita/evidentia/actions/workflows/ci.yml/badge.svg)](https://github.com/giselleevita/evidentia/actions/workflows/ci.yml)
 
 Evidentia is a compliance workflow reference implementation for turning existing IT and security activity into reviewable evidence.
@@ -60,13 +58,10 @@ evidentia/
 │   └── integration-service/   # External integrations service
 ├── frontend/
 │   └── compliance-portal/      # Main React application
-├── shared/                     # Cross-stack shared resources
-│   └── dto/                    # API contracts, OpenAPI specs
 ├── infra/                      # Infrastructure as Code
 │   ├── docker/                 # Dockerfiles and docker-compose
 │   ├── k8s/                    # Kubernetes manifests
-│   ├── terraform/              # Terraform for Azure resources
-│   └── pipelines/              # CI/CD pipeline definitions
+│   └── terraform/              # Terraform for Azure resources
 └── docs/                       # Documentation
     ├── architecture/           # Architecture decision records
     └── setup/                  # Setup and deployment guides
@@ -203,3 +198,7 @@ See [Azure Deployment Guide](docs/setup/azure_deployment.md) for production depl
 
 Copyright (c) 2026 Giselle Evita Koch. See [LICENSE](LICENSE) for the
 proprietary source-available terms.
+
+## Related Projects
+
+- [proofrail-evidence-api](https://github.com/giselleevita/proofrail-evidence-api) — the featured evidence API in the same portfolio stack.
