@@ -10,6 +10,7 @@ object RatingMapper {
     fun toDto(rating: Rating): RatingDto {
         return RatingDto(
             id = rating.id.value,
+            tenantId = rating.tenantId.value,
             raterId = rating.raterId,
             resourceType = rating.resourceType,
             resourceId = rating.resourceId,

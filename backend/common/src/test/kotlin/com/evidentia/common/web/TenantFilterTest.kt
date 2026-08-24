@@ -39,6 +39,21 @@ class TenantFilterTest {
     }
 
     @Test
+    fun `rejects authenticated requests without a tenant claim`() {
+        authenticateWithoutTenant()
+        val request = MockHttpServletRequest()
+        val response = MockHttpServletResponse()
+        var invoked = false
+
+        filter.doFilter(request, response, FilterChain { _, _ -> invoked = true })
+
+        assertEquals(403, response.status)
+        assertTrue(!invoked)
+        SecurityContextHolder.clearContext()
+        assertNull(TenantContext.getTenantId())
+    }
+
+    @Test
     fun `uses the validated token tenant and clears it after the request`() {
         authenticateAs("tenant-a")
         val request = MockHttpServletRequest()
@@ -61,6 +76,17 @@ class TenantFilterTest {
             Instant.now().plusSeconds(60),
             mapOf("alg" to "none"),
             mapOf("sub" to "service", "tid" to tenantId),
+        )
+        SecurityContextHolder.getContext().authentication = JwtAuthenticationToken(jwt)
+    }
+
+    private fun authenticateWithoutTenant() {
+        val jwt = Jwt(
+            "token",
+            Instant.now(),
+            Instant.now().plusSeconds(60),
+            mapOf("alg" to "none"),
+            mapOf("sub" to "service"),
         )
         SecurityContextHolder.getContext().authentication = JwtAuthenticationToken(jwt)
     }

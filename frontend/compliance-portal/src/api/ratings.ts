@@ -14,15 +14,17 @@ export interface Rating {
 }
 
 export interface RatingSummary {
-  average: number;
-  count: number;
-  distribution: Record<number, number>;
+  resourceType: string;
+  resourceId: string;
+  averageRating: number;
+  totalRatings: number;
 }
 
 export interface UserStatistics {
-  totalRatings: number;
-  averageGiven: number;
-  averageReceived: number;
+  userId: string;
+  totalRatingsGiven: number;
+  averageRatingGiven: number;
+  ratingDistribution: Record<number, number>;
 }
 
 export interface CreateRatingRequest {
@@ -38,62 +40,63 @@ export interface UpdateRatingRequest {
 }
 
 export interface UserAccount {
-  id: string;
+  userId: string;
   email: string;
-  name?: string;
+  name?: string | null;
+  tenantId: string;
 }
 
 export const ratingsApi = {
   create: async (data: CreateRatingRequest): Promise<Rating> => {
-    const response = await apiClient.post<ApiResponse<Rating>>('/api/v1/ratings', data);
+    const response = await apiClient.post<ApiResponse<Rating>>('/ratings', data);
     return response.data.data!;
   },
 
   update: async (ratingId: string, data: UpdateRatingRequest): Promise<Rating> => {
-    const response = await apiClient.put<ApiResponse<Rating>>(`/api/v1/ratings/${ratingId}`, data);
+    const response = await apiClient.put<ApiResponse<Rating>>(`/ratings/${ratingId}`, data);
     return response.data.data!;
   },
 
   delete: async (ratingId: string): Promise<void> => {
-    await apiClient.delete(`/api/v1/ratings/${ratingId}`);
+    await apiClient.delete(`/ratings/${ratingId}`);
   },
 
   get: async (ratingId: string): Promise<Rating> => {
-    const response = await apiClient.get<ApiResponse<Rating>>(`/api/v1/ratings/${ratingId}`);
+    const response = await apiClient.get<ApiResponse<Rating>>(`/ratings/${ratingId}`);
     return response.data.data!;
   },
 
   getByResource: async (resourceType: string, resourceId: string): Promise<Rating[]> => {
     const response = await apiClient.get<ApiResponse<Rating[]>>(
-      `/api/v1/ratings/resource/${resourceType}/${resourceId}`
+      `/ratings/resource/${resourceType}/${resourceId}`
     );
     return response.data.data!;
   },
 
   getResourceSummary: async (resourceType: string, resourceId: string): Promise<RatingSummary> => {
     const response = await apiClient.get<ApiResponse<RatingSummary>>(
-      `/api/v1/ratings/resource/${resourceType}/${resourceId}/summary`
+      `/ratings/resource/${resourceType}/${resourceId}/summary`
     );
     return response.data.data!;
   },
 
   getMyRatings: async (): Promise<Rating[]> => {
-    const response = await apiClient.get<ApiResponse<Rating[]>>('/api/v1/ratings/my-ratings');
+    const response = await apiClient.get<ApiResponse<Rating[]>>('/ratings/my-ratings');
     return response.data.data!;
   },
 
   getAccount: async (): Promise<UserAccount> => {
-    const response = await apiClient.get<ApiResponse<UserAccount>>('/api/v1/ratings/account/me');
+    const response = await apiClient.get<ApiResponse<UserAccount>>('/ratings/account/me');
     return response.data.data!;
   },
 
   getAccountStatistics: async (): Promise<UserStatistics> => {
-    const response = await apiClient.get<ApiResponse<UserStatistics>>('/api/v1/ratings/account/me/statistics');
+    const response = await apiClient.get<ApiResponse<UserStatistics>>('/ratings/account/me/statistics');
     return response.data.data!;
   },
 
   getUserStatistics: async (raterId: string): Promise<UserStatistics> => {
-    const response = await apiClient.get<ApiResponse<UserStatistics>>(`/api/v1/ratings/user/${raterId}/statistics`);
+    const response = await apiClient.get<ApiResponse<UserStatistics>>(`/ratings/user/${raterId}/statistics`);
     return response.data.data!;
   },
 };

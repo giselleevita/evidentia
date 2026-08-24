@@ -32,31 +32,9 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to unwrap ApiResponse
+// Response interceptor for auth error handling.
 apiClient.interceptors.response.use(
-  (response) => {
-    // Backend returns ApiResponse<T>, extract data if present
-    if (response.data && typeof response.data === 'object' && 'data' in response.data) {
-      return response;
-    }
-    return response;
-  },
-  (error) => {
-    // Handle error responses
-    return Promise.reject(error);
-  }
-);
-
-// Response interceptor for error handling and unwrapping ApiResponse
-apiClient.interceptors.response.use(
-  (response) => {
-    // Backend returns ApiResponse<T> wrapper
-    if (response.data && typeof response.data === 'object' && 'success' in response.data) {
-      // Return the data directly for easier consumption
-      return response;
-    }
-    return response;
-  },
+  (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       // Handle unauthorized - logout and redirect to login

@@ -25,6 +25,7 @@ class EvidenceController(
     private val evidenceService: EvidenceService
 ) {
     @PostMapping
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     @Operation(summary = "Create new evidence", description = "Creates a new evidence item in DRAFT status")
     fun createEvidence(
         @Valid @RequestBody request: CreateEvidenceDto,
@@ -68,6 +69,7 @@ class EvidenceController(
     }
     
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     @Operation(summary = "Get evidence by ID")
     fun getEvidence(
         @PathVariable id: String,
@@ -101,6 +103,7 @@ class EvidenceController(
     }
     
     @GetMapping
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     @Operation(summary = "List evidence", description = "Lists all evidence for the current tenant, optionally filtered by status")
     fun listEvidence(
         @AuthenticationPrincipal jwt: Jwt,
@@ -117,6 +120,7 @@ class EvidenceController(
     }
     
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     @Operation(summary = "Update evidence", description = "Updates evidence content (only allowed in DRAFT or REJECTED status)")
     fun updateEvidence(
         @PathVariable id: String,
@@ -170,6 +174,7 @@ class EvidenceController(
     }
     
     @PostMapping("/{id}/submit")
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     @Operation(summary = "Submit evidence for review", description = "Transitions evidence from DRAFT to IN_REVIEW")
     fun submitForReview(
         @PathVariable id: String,
@@ -217,8 +222,8 @@ class EvidenceController(
     }
     
     @PostMapping("/{id}/approve")
-    @PreAuthorize("hasRole('Auditor')")
-    @Operation(summary = "Approve evidence", description = "Approves evidence (Auditor role required)")
+    @PreAuthorize("hasAnyRole('Auditor', 'Admin')")
+    @Operation(summary = "Approve evidence", description = "Approves evidence (Auditor or Admin role required)")
     fun approveEvidence(
         @PathVariable id: String,
         @RequestBody request: ApproveEvidenceDto,
@@ -265,8 +270,8 @@ class EvidenceController(
     }
     
     @PostMapping("/{id}/reject")
-    @PreAuthorize("hasRole('Auditor')")
-    @Operation(summary = "Reject evidence", description = "Rejects evidence (Auditor role required)")
+    @PreAuthorize("hasAnyRole('Auditor', 'Admin')")
+    @Operation(summary = "Reject evidence", description = "Rejects evidence (Auditor or Admin role required)")
     fun rejectEvidence(
         @PathVariable id: String,
         @Valid @RequestBody request: RejectEvidenceDto,

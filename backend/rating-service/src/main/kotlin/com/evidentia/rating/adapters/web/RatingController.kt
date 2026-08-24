@@ -1,6 +1,7 @@
 package com.evidentia.rating.adapters.web
 
 import com.evidentia.common.domain.TenantId
+import com.evidentia.common.web.ApiResponse
 import com.evidentia.rating.adapters.web.dto.RatingDto
 import com.evidentia.rating.adapters.web.dto.ResourceRatingSummaryDto
 import com.evidentia.rating.adapters.web.dto.UserAccountDto
@@ -13,6 +14,7 @@ import com.evidentia.rating.domain.RatingId
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.*
@@ -20,6 +22,7 @@ import java.util.UUID
 
 @RestController
 @RequestMapping("/api/v1/ratings")
+@PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
 class RatingController(
     private val ratingService: RatingService
 ) {
@@ -27,7 +30,7 @@ class RatingController(
     fun createRating(
         @AuthenticationPrincipal jwt: Jwt,
         @Valid @RequestBody request: CreateRatingRequest
-    ): ResponseEntity<RatingDto> {
+    ): ResponseEntity<ApiResponse<RatingDto>> {
         val tenantId = extractTenantId(jwt)
         val raterId = extractUserId(jwt)
         
@@ -42,7 +45,7 @@ class RatingController(
         )
         
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(RatingMapper.toDto(rating))
+            .body(ApiResponse.success(RatingMapper.toDto(rating)))
     }
     
     @PutMapping("/{ratingId}")
@@ -50,7 +53,7 @@ class RatingController(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable ratingId: UUID,
         @Valid @RequestBody request: UpdateRatingRequest
-    ): ResponseEntity<RatingDto> {
+    ): ResponseEntity<ApiResponse<RatingDto>> {
         val tenantId = extractTenantId(jwt)
         
         val newValue = request.value?.let { RatingMapper.toRatingValue(it) }
@@ -61,14 +64,14 @@ class RatingController(
             newComment = request.comment
         )
         
-        return ResponseEntity.ok(RatingMapper.toDto(rating))
+        return ResponseEntity.ok(ApiResponse.success(RatingMapper.toDto(rating)))
     }
     
     @DeleteMapping("/{ratingId}")
     fun deleteRating(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable ratingId: UUID
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<ApiResponse<Unit>> {
         val tenantId = extractTenantId(jwt)
         
         ratingService.deleteRating(
@@ -76,14 +79,14 @@ class RatingController(
             tenantId = TenantId(tenantId)
         )
         
-        return ResponseEntity.noContent().build()
+        return ResponseEntity.ok(ApiResponse.success(Unit))
     }
     
     @GetMapping("/{ratingId}")
     fun getRating(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable ratingId: UUID
-    ): ResponseEntity<RatingDto> {
+    ): ResponseEntity<ApiResponse<RatingDto>> {
         val tenantId = extractTenantId(jwt)
         
         val rating = ratingService.getRating(
@@ -91,7 +94,7 @@ class RatingController(
             tenantId = TenantId(tenantId)
         )
         
-        return ResponseEntity.ok(RatingMapper.toDto(rating))
+        return ResponseEntity.ok(ApiResponse.success(RatingMapper.toDto(rating)))
     }
     
     @GetMapping("/resource/{resourceType}/{resourceId}")
@@ -99,7 +102,7 @@ class RatingController(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable resourceType: String,
         @PathVariable resourceId: String
-    ): ResponseEntity<List<RatingDto>> {
+    ): ResponseEntity<ApiResponse<List<RatingDto>>> {
         val tenantId = extractTenantId(jwt)
         
         val ratings = ratingService.getRatingsForResource(
@@ -108,7 +111,7 @@ class RatingController(
             resourceId = resourceId
         )
         
-        return ResponseEntity.ok(ratings.map { RatingMapper.toDto(it) })
+        return ResponseEntity.ok(ApiResponse.success(ratings.map { RatingMapper.toDto(it) }))
     }
     
     @GetMapping("/resource/{resourceType}/{resourceId}/summary")
@@ -116,7 +119,7 @@ class RatingController(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable resourceType: String,
         @PathVariable resourceId: String
-    ): ResponseEntity<ResourceRatingSummaryDto> {
+    ): ResponseEntity<ApiResponse<ResourceRatingSummaryDto>> {
         val tenantId = extractTenantId(jwt)
         
         val summary = ratingService.getResourceRatingSummary(
@@ -125,7 +128,7 @@ class RatingController(
             resourceId = resourceId
         )
         
-        return ResponseEntity.ok(RatingMapper.toDto(summary))
+        return ResponseEntity.ok(ApiResponse.success(RatingMapper.toDto(summary)))
     }
     
     @GetMapping("/resource/{resourceType}/{resourceId}/user")
@@ -133,7 +136,7 @@ class RatingController(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable resourceType: String,
         @PathVariable resourceId: String
-    ): ResponseEntity<RatingDto?> {
+    ): ResponseEntity<ApiResponse<RatingDto?>> {
         val tenantId = extractTenantId(jwt)
         val raterId = extractUserId(jwt)
         
@@ -144,14 +147,14 @@ class RatingController(
             resourceId = resourceId
         )
         
-        return ResponseEntity.ok(rating?.let { RatingMapper.toDto(it) })
+        return ResponseEntity.ok(ApiResponse.success(rating?.let { RatingMapper.toDto(it) }))
     }
     
     @GetMapping("/user/{raterId}")
     fun getRatingsByUser(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable raterId: String
-    ): ResponseEntity<List<RatingDto>> {
+    ): ResponseEntity<ApiResponse<List<RatingDto>>> {
         val tenantId = extractTenantId(jwt)
         
         val ratings = ratingService.getRatingsByUser(
@@ -159,13 +162,13 @@ class RatingController(
             raterId = raterId
         )
         
-        return ResponseEntity.ok(ratings.map { RatingMapper.toDto(it) })
+        return ResponseEntity.ok(ApiResponse.success(ratings.map { RatingMapper.toDto(it) }))
     }
     
     @GetMapping("/my-ratings")
     fun getMyRatings(
         @AuthenticationPrincipal jwt: Jwt
-    ): ResponseEntity<List<RatingDto>> {
+    ): ResponseEntity<ApiResponse<List<RatingDto>>> {
         val tenantId = extractTenantId(jwt)
         val raterId = extractUserId(jwt)
         
@@ -174,13 +177,13 @@ class RatingController(
             raterId = raterId
         )
         
-        return ResponseEntity.ok(ratings.map { RatingMapper.toDto(it) })
+        return ResponseEntity.ok(ApiResponse.success(ratings.map { RatingMapper.toDto(it) }))
     }
     
     @GetMapping("/account/me")
     fun getMyAccount(
         @AuthenticationPrincipal jwt: Jwt
-    ): ResponseEntity<UserAccountDto> {
+    ): ResponseEntity<ApiResponse<UserAccountDto>> {
         val tenantId = extractTenantId(jwt)
         val userId = extractUserId(jwt)
         val email = extractEmail(jwt)
@@ -193,13 +196,13 @@ class RatingController(
             tenantId = tenantId
         )
         
-        return ResponseEntity.ok(account)
+        return ResponseEntity.ok(ApiResponse.success(account))
     }
     
     @GetMapping("/account/me/statistics")
     fun getMyRatingStatistics(
         @AuthenticationPrincipal jwt: Jwt
-    ): ResponseEntity<UserRatingStatisticsDto> {
+    ): ResponseEntity<ApiResponse<UserRatingStatisticsDto>> {
         val tenantId = extractTenantId(jwt)
         val raterId = extractUserId(jwt)
         
@@ -208,14 +211,14 @@ class RatingController(
             raterId = raterId
         )
         
-        return ResponseEntity.ok(RatingMapper.toDto(statistics))
+        return ResponseEntity.ok(ApiResponse.success(RatingMapper.toDto(statistics)))
     }
     
     @GetMapping("/user/{raterId}/statistics")
     fun getUserRatingStatistics(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable raterId: String
-    ): ResponseEntity<UserRatingStatisticsDto> {
+    ): ResponseEntity<ApiResponse<UserRatingStatisticsDto>> {
         val tenantId = extractTenantId(jwt)
         
         val statistics = ratingService.getUserRatingStatistics(
@@ -223,7 +226,7 @@ class RatingController(
             raterId = raterId
         )
         
-        return ResponseEntity.ok(RatingMapper.toDto(statistics))
+        return ResponseEntity.ok(ApiResponse.success(RatingMapper.toDto(statistics)))
     }
     
     private fun extractTenantId(jwt: Jwt): String {

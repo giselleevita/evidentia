@@ -26,6 +26,7 @@ dependencies {
 
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
 }
 springBoot {
     mainClass.set("com.evidentia.integration.IntegrationServiceApplicationKt")

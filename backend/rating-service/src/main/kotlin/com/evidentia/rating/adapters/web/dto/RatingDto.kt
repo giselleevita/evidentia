@@ -33,6 +33,7 @@ data class UpdateRatingRequest(
 
 data class RatingDto(
     val id: UUID,
+    val tenantId: String,
     val raterId: String,
     val resourceType: String,
     val resourceId: String,

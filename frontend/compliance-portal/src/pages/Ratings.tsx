@@ -24,11 +24,11 @@ export const Ratings = () => {
       {stats && (
         <div className="stats-grid">
           <div className="stat-card">
-            <div className="stat-value">{stats.totalRatings}</div>
+            <div className="stat-value">{stats.totalRatingsGiven}</div>
             <div className="stat-label">Total Ratings</div>
           </div>
           <div className="stat-card">
-            <div className="stat-value">{stats.averageGiven.toFixed(1)}</div>
+            <div className="stat-value">{stats.averageRatingGiven.toFixed(1)}</div>
             <div className="stat-label">Average Given</div>
           </div>
         </div>

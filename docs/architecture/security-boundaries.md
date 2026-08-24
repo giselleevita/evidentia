@@ -8,6 +8,9 @@ remaining boundaries that require deployment-specific work.
 
 - Backend endpoints require a validated OAuth2 bearer token except health and
   info endpoints.
+- CI runs a repository secret scan before backend and frontend build jobs.
+- `.env` and local override files are ignored; tracked examples must contain
+  placeholders only.
 - Azure Entra ID `roles` claims are mapped to Spring `ROLE_*` authorities for
   method-level authorization.
 - The tenant identifier is derived from the validated JWT. A conflicting
@@ -43,3 +46,17 @@ remaining boundaries that require deployment-specific work.
   row-level security.
 - The Azure Terraform and Kubernetes files are partial reference templates, not
   a validated production deployment.
+
+## Secret Exposure Response
+
+If a secret is committed or suspected to be committed:
+
+1. Revoke or rotate the exposed credential in the source system immediately
+   before relying on repository cleanup.
+2. Remove the secret from tracked files and replace it with a placeholder in an
+   example file.
+3. Run the CI secret scan and block merge until it passes.
+4. Review logs, deployed environments, and local developer machines for reuse of
+   the exposed value.
+5. Record the incident, affected systems, rotated credentials, and verification
+   evidence in the project security log.

@@ -17,10 +17,17 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
-        changeOrigin: true,
-      },
+      '/api/v1/evidence': { target: 'http://localhost:8080', changeOrigin: true },
+      '/api/v1/auth': { target: 'http://localhost:8080', changeOrigin: true },
+      '/api/v1/audit': { target: 'http://localhost:8081', changeOrigin: true },
+      '/api/v1/ratings': { target: 'http://localhost:8082', changeOrigin: true },
+      '/api/v1/incidents': { target: 'http://localhost:8083', changeOrigin: true },
+      '/api/v1/compliance': { target: 'http://localhost:8084', changeOrigin: true },
+      '/api/v1/reports': { target: 'http://localhost:8085', changeOrigin: true },
+      '/api/v1/collectors': { target: 'http://localhost:8086', changeOrigin: true },
+      '/api/v1/integrations': { target: 'http://localhost:8086', changeOrigin: true },
+      '/api/v1/billing': { target: 'http://localhost:8087', changeOrigin: true },
+      '/api/v1/features': { target: 'http://localhost:8087', changeOrigin: true },
     },
   },
 })

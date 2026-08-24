@@ -39,38 +39,38 @@ export interface ReviewIncidentRequest {
 export const incidentsApi = {
   list: async (status?: string): Promise<Incident[]> => {
     const params = status ? `?status=${status}` : '';
-    const response = await apiClient.get<Incident[]>(`/api/v1/incidents${params}`);
+    const response = await apiClient.get<Incident[]>(`/incidents${params}`);
     return response.data;
   },
 
   get: async (id: string): Promise<Incident> => {
-    const response = await apiClient.get(`/api/v1/incidents/${id}`);
+    const response = await apiClient.get(`/incidents/${id}`);
     // Incident service returns data directly, not wrapped in ApiResponse
     return response.data;
   },
 
   create: async (data: CreateIncidentRequest): Promise<Incident> => {
-    const response = await apiClient.post('/api/v1/incidents', data);
+    const response = await apiClient.post('/incidents', data);
     return response.data;
   },
 
   escalate: async (id: string, data: EscalateIncidentRequest): Promise<Incident> => {
-    const response = await apiClient.post(`/api/v1/incidents/${id}/escalate`, data);
+    const response = await apiClient.post(`/incidents/${id}/escalate`, data);
     return response.data;
   },
 
   resolve: async (id: string, data: ResolveIncidentRequest): Promise<Incident> => {
-    const response = await apiClient.post(`/api/v1/incidents/${id}/resolve`, data);
+    const response = await apiClient.post(`/incidents/${id}/resolve`, data);
     return response.data;
   },
 
   review: async (id: string, data: ReviewIncidentRequest): Promise<Incident> => {
-    const response = await apiClient.post(`/api/v1/incidents/${id}/review`, data);
+    const response = await apiClient.post(`/incidents/${id}/review`, data);
     return response.data;
   },
 
   listBySeverity: async (severity: string): Promise<Incident[]> => {
-    const response = await apiClient.get<Incident[]>(`/api/v1/incidents/severity/${severity}`);
+    const response = await apiClient.get<Incident[]>(`/incidents/severity/${severity}`);
     return response.data;
   },
 };

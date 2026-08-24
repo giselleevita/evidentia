@@ -2,14 +2,15 @@ package com.evidentia.common.web
 
 import com.evidentia.common.domain.AuditEvent
 import com.evidentia.common.domain.TenantId
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.http.MediaType
 import org.springframework.web.client.RestClient
 import java.util.UUID
 
@@ -50,8 +51,8 @@ class AuthController(
         val userId = extractUserId(jwt)
         val actor = extractActor(jwt)
         
-        // Log logout event to audit service (optional, async)
-        logLogoutEvent(tenantId, userId, actor)
+        // Log logout event to audit service on a best-effort basis.
+        logLogoutEvent(tenantId, userId, actor, jwt.tokenValue)
         
         val response = LogoutResponse(
             message = "Logout successful. Please discard your token and clear local storage.",
@@ -62,7 +63,7 @@ class AuthController(
         return ResponseEntity.ok(response)
     }
     
-    private fun logLogoutEvent(tenantId: String, userId: String, actor: String) {
+    private fun logLogoutEvent(tenantId: String, userId: String, actor: String, bearerToken: String?) {
         if (auditClient == null) return // Skip if audit service not configured
         
         try {
@@ -79,16 +80,18 @@ class AuthController(
                 )
             )
             
-            auditClient.post()
+            val request = auditClient.post()
                 .uri("/api/v1/audit/events")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(event)
-                .retrieve()
-                .toBodilessEntity()
+
+            if (!bearerToken.isNullOrBlank()) {
+                request.header("Authorization", "Bearer $bearerToken")
+            }
+
+            request.retrieve().toBodilessEntity()
         } catch (e: Exception) {
-            // Log error but don't fail logout operation
-            // In production, consider using async messaging for resilience
-            println("Failed to log logout event: ${e.message}")
+            logger.warn("Failed to log logout audit event for user {}: {}", userId, e.message)
         }
     }
     
@@ -125,6 +128,8 @@ class AuthController(
             ?: "unknown"
     }
 }
+
+private val logger = LoggerFactory.getLogger(AuthController::class.java)
 
 data class LogoutResponse(
     val message: String,

@@ -75,6 +75,7 @@ class IntegrationController(
     }
     
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('Auditor', 'Admin')")
     @Operation(summary = "Get integration by ID")
     fun getIntegration(
         @PathVariable id: String,
@@ -108,6 +109,7 @@ class IntegrationController(
     }
     
     @GetMapping
+    @PreAuthorize("hasAnyRole('Auditor', 'Admin')")
     @Operation(summary = "List integrations", description = "Lists all integrations, optionally filtered by type")
     fun listIntegrations(
         @RequestParam(required = false) type: String?,

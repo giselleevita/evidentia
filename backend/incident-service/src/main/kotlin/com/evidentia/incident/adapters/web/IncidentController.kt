@@ -55,6 +55,7 @@ class IncidentController(
     private val incidentService: IncidentService
 ) {
     @PostMapping
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     fun createIncident(
         @RequestBody request: CreateIncidentDto,
         @AuthenticationPrincipal jwt: Jwt,
@@ -95,6 +96,7 @@ class IncidentController(
     }
     
     @GetMapping
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     fun listIncidents(
         @AuthenticationPrincipal jwt: Jwt,
         @RequestParam(required = false) status: String?
@@ -113,6 +115,7 @@ class IncidentController(
     }
     
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     fun getIncident(
         @PathVariable id: String,
         @AuthenticationPrincipal jwt: Jwt
@@ -140,7 +143,7 @@ class IncidentController(
     }
     
     @PostMapping("/{id}/escalate")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Auditor', 'Admin')")
     fun escalateIncident(
         @PathVariable id: String,
         @RequestBody request: EscalateIncidentDto,
@@ -180,7 +183,7 @@ class IncidentController(
     }
     
     @PostMapping("/{id}/resolve")
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Auditor', 'Admin')")
     fun resolveIncident(
         @PathVariable id: String,
         @RequestBody request: ResolveIncidentDto,
@@ -220,7 +223,7 @@ class IncidentController(
     }
     
     @PostMapping("/{id}/review")
-    @PreAuthorize("hasRole('Auditor')")
+    @PreAuthorize("hasAnyRole('Auditor', 'Admin')")
     fun reviewIncident(
         @PathVariable id: String,
         @RequestBody request: ReviewIncidentDto,
@@ -260,6 +263,7 @@ class IncidentController(
     }
     
     @GetMapping("/severity/{severity}")
+    @PreAuthorize("hasAnyRole('User', 'Auditor', 'Admin')")
     fun listIncidentsBySeverity(
         @PathVariable severity: String,
         @AuthenticationPrincipal jwt: Jwt

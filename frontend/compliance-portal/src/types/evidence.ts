@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const EvidenceStatusSchema = z.enum(['DRAFT', 'IN_REVIEW', 'APPROVED', 'REJECTED', 'LOCKED']);
 
 export const EvidenceSchema = z.object({
-  id: z.uuid(),
+  id: z.string().uuid(),
   tenantId: z.string(),
   title: z.string(),
   description: z.string(),
@@ -16,7 +16,7 @@ export const EvidenceSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   approvedAt: z.string().nullable().optional(),
-  references: z.record(z.string(), z.string()).default({}),
+  references: z.record(z.string()).default({}),
   attachmentIds: z.array(z.string()).default([]),
 });
 
@@ -26,7 +26,7 @@ export const CreateEvidenceRequestSchema = z.object({
   type: z.string().min(1),
   sourceSystem: z.string().min(1),
   owner: z.string().min(1),
-  references: z.record(z.string(), z.string()).optional().default({}),
+  references: z.record(z.string()).optional().default({}),
 });
 
 export const UpdateEvidenceStatusRequestSchema = z.object({
@@ -40,7 +40,7 @@ export const ApiResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
     error: z.object({
       code: z.string(),
       message: z.string(),
-      details: z.record(z.string(), z.unknown()).optional().nullable(),
+      details: z.record(z.unknown()).optional().nullable(),
     }).nullable().optional(),
     timestamp: z.string(),
   });
