@@ -6,6 +6,10 @@ Evidentia is a compliance workflow reference implementation for turning existing
 
 **Reviewer path:** see [docs/REVIEWER_GUIDE.md](docs/REVIEWER_GUIDE.md) for a 15-minute evaluation walkthrough.
 
+**No Azure credentials?** Start with the
+[local lifecycle and security tests](docs/REVIEWER_GUIDE.md#review-without-cloud-credentials).
+The authenticated application requires Entra ID configuration; the tests do not.
+
 It demonstrates lifecycle-driven evidence management, tenant-aware service boundaries,
 correlated audit events, incident workflows, and external integration patterns in a
 Kotlin/Spring Boot and React monorepo.
@@ -31,6 +35,7 @@ flowchart LR
   - Evidence Service: Evidence lifecycle management (DRAFT → IN_REVIEW → APPROVED → LOCKED)
   - Audit Log Service: Centralized tenant-scoped audit event storage
   - Incident Service: Security incident tracking and resolution
+  - Rating Service: Tenant-scoped compliance ratings
   - Integration Service: External system integrations (Microsoft 365, GitHub, Jira)
 - **Frontend**: React + TypeScript + Vite (compliance portal)
 - **Database**: PostgreSQL with Flyway migrations (separate DBs per service)
@@ -55,6 +60,7 @@ evidentia/
 │   ├── evidence-service/       # Evidence management service
 │   ├── audit-log-service/      # Audit logging service
 │   ├── incident-service/       # Incident governance service
+│   ├── rating-service/         # Compliance ratings service
 │   └── integration-service/   # External integrations service
 ├── frontend/
 │   └── compliance-portal/      # Main React application
@@ -69,43 +75,51 @@ evidentia/
 
 ## Quick Start
 
-### Easiest Way to Start
+### Start the authenticated application
 
-**Start the local infrastructure, five backend services, and frontend with one command:**
+After completing the prerequisites and [Entra ID setup](docs/setup/local_dev.md),
+start the local infrastructure, five backend services, and frontend from the
+repository root:
 ```bash
 ./start.sh
 ```
 
 Then open: **http://localhost:5173**
 
-**Frontend only (fastest, for UI testing):**
+**Frontend development server only:**
 ```bash
-./start-frontend-only.sh
+cd frontend/compliance-portal
+npm ci
+npm run dev
 ```
+
+Without frontend Entra ID variables, the portal displays an authentication
+configuration message. This command does not start the backend or provide a
+mock evidence workflow.
 
 **Stop everything:**
 ```bash
-./stop.sh
+./stop.sh  # from the repository root
 ```
 
 
 ### Prerequisites
-- JDK 17+
+- JDK 17 (the configured Gradle toolchain; also used in CI)
 - Node.js 20+
 - Docker & Docker Compose
+- Bash for the startup scripts (Linux, macOS, or WSL)
 - Azure Entra ID application registration for authenticated end-to-end use
 
 ### Local Development (Manual)
 
 1. **Start infrastructure services:**
 ```bash
-cd infra/docker
-docker compose up -d
+docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
 2. **Configure Azure AD** (see [Local Dev Setup](docs/setup/local_dev.md))
 
-3. **Run backend services:**
+3. **Run backend services from the repository root, in separate terminals:**
 ```bash
 # Evidence Service (port 8080)
 DATABASE_URL=jdbc:postgresql://localhost:15432/evidentia_evidence ./gradlew :backend:evidence-service:bootRun
@@ -115,12 +129,20 @@ DATABASE_URL=jdbc:postgresql://localhost:5433/evidentia_audit ./gradlew :backend
 
 # Incident Service (port 8083) - in another terminal
 DATABASE_URL=jdbc:postgresql://localhost:5434/evidentia_incident ./gradlew :backend:incident-service:bootRun
+
+# Rating Service (port 8082)
+DATABASE_URL=jdbc:postgresql://localhost:5435/evidentia_rating ./gradlew :backend:rating-service:bootRun
+
+# Integration Service (port 8084)
+INTEGRATION_DB_URL=jdbc:postgresql://localhost:5436/evidentia_integration \
+INTEGRATION_DB_USER=evidentia INTEGRATION_DB_PASS=evidentia \
+./gradlew :backend:integration-service:bootRun
 ```
 
 4. **Run frontend:**
 ```bash
 cd frontend/compliance-portal
-npm install
+npm ci
 npm run dev
 ```
 
