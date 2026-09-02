@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- JDK 17+
+- JDK 17 (the Gradle toolchain and CI version)
 - Node.js 20+
 - Docker & Docker Compose
 - Azure CLI (for Azure AD configuration)
@@ -12,8 +12,7 @@
 ### 1. Start Infrastructure Services
 
 ```bash
-cd infra/docker
-docker compose up -d
+docker compose -f infra/docker/docker-compose.yml up -d
 ```
 
 This starts:
