@@ -70,12 +70,38 @@ INTEGRATION_DB_PASS=evidentia \
 
 ### 4. Run Frontend
 
+In a new terminal at the repository root, install the locked dependencies and
+create local configuration:
+
 ```bash
 cd frontend/compliance-portal
-npm install
+npm ci
+cp .env.example .env.local
+```
+
+Replace the placeholders in `.env.local` with the public values from your Entra
+registrations:
+
+- `VITE_AZURE_CLIENT_ID`: the frontend public-client application ID.
+- `VITE_AZURE_TENANT_ID`: the directory tenant ID.
+- `VITE_AZURE_SCOPES`: the exposed backend API scope(s), comma-separated.
+- Keep `VITE_DEMO_MODE=false` for an authenticated workflow.
+
+Register `http://localhost:5173` as a single-page application redirect URI for
+the frontend registration. The portal uses the current browser origin as its
+redirect URI, so update the registration if you choose a different local port.
+Never place a client secret in a `VITE_*` variable: these values are shipped to
+the browser. The separate service-to-service secrets from step 2 belong only in
+backend process environments.
+
+```bash
 npm run lint
 npm run dev
 ```
+
+Without configured frontend values, the portal shows an authentication
+configuration message. `VITE_DEMO_MODE=true` only skips the frontend sign-in UI;
+it does not supply mock data or authorize backend API calls.
 
 ## Database Migrations
 
