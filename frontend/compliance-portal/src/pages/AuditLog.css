@@ -1,0 +1,33 @@
+.audit-log {
+  width: 100%;
+}
+
+.page-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.page-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  margin-top: var(--spacing-xs);
+}
+
+.action-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-mono);
+}
+
+.resource-id {
+  font-size: 0.8125rem;
+  background: var(--color-bg-tertiary);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family-mono);
+}
