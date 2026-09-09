@@ -45,6 +45,11 @@ passing tests. Open `backend/evidence-service/build/reports/tests/test/index.htm
 for the individual results. This verifies local application and controller
 behavior, not a deployed identity provider, PostgreSQL isolation, or audit delivery.
 
+On every backend CI run, the evidence-service HTML report is also retained for 14 days as
+the `evidence-service-test-report` workflow artifact. This gives a reviewer a
+direct, versioned view of the lifecycle, tenant-boundary, and controller tests
+without requiring cloud credentials or a local Java installation.
+
 For the complete backend and frontend checks:
 
 ```bash
