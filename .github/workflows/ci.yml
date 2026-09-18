@@ -8,9 +8,14 @@ on:
     branches:
       - main
 
+concurrency:
+  group: evidentia-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   secret-scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
         with:
@@ -22,6 +27,7 @@ jobs:
 
   backend-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: secret-scan
     steps:
       - uses: actions/checkout@v6
@@ -48,6 +54,7 @@ jobs:
 
   frontend-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: secret-scan
     steps:
       - uses: actions/checkout@v6
