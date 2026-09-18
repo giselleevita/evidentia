@@ -2,6 +2,8 @@ package com.evidentia.integration.adapters.persistence
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
+import java.time.Instant
 import java.util.UUID
 
 interface WebhookSubscriptionJpaRepository : JpaRepository<WebhookSubscriptionEntity, UUID> {
@@ -11,9 +13,21 @@ interface WebhookSubscriptionJpaRepository : JpaRepository<WebhookSubscriptionEn
 
 interface WebhookDeliveryJpaRepository : JpaRepository<WebhookDeliveryEntity, UUID> {
     @Query(
-        "SELECT d FROM WebhookDeliveryEntity d " +
-        "WHERE d.deliveredAt IS NULL AND d.failedAt IS NULL AND d.attemptCount < 5 " +
-        "ORDER BY d.createdAt ASC"
+        value = """
+            SELECT * FROM webhook_deliveries
+            WHERE delivered_at IS NULL
+              AND failed_at IS NULL
+              AND attempt_count < 5
+              AND next_attempt_at <= :now
+              AND (lease_until IS NULL OR lease_until < :now)
+            ORDER BY next_attempt_at ASC, created_at ASC
+            LIMIT :batchSize
+            FOR UPDATE SKIP LOCKED
+        """,
+        nativeQuery = true,
     )
-    fun findPendingDeliveries(): List<WebhookDeliveryEntity>
+    fun findClaimableDeliveries(
+        @Param("now") now: Instant,
+        @Param("batchSize") batchSize: Int,
+    ): List<WebhookDeliveryEntity>
 }
