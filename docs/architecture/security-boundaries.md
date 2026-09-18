@@ -31,9 +31,11 @@ remaining boundaries that require deployment-specific work.
 
 ## Known Limitations
 
-- Audit delivery uses authenticated but synchronous, best-effort HTTP. A
-  durable queue and delivery monitoring are still required for production
-  reliability.
+- Audit delivery uses authenticated but synchronous, best-effort HTTP.
+- Webhook deliveries are persisted, leased in bounded batches, retried with bounded
+  exponential backoff, and exposed through delivery/retry/failure metrics. This reduces
+  duplicate work and hot retry loops, but production operation still requires alerting,
+  retention policy, and an external dead-letter review process.
 - The current tenancy model treats the validated Entra ID `tid` claim as the
   Evidentia tenant authority. Deployments requiring multiple application
   tenants inside one Entra tenant need a different signed tenant claim and
