@@ -45,6 +45,10 @@ audit-log-service:
 evidentia:
   service-auth:
     enabled: ${EVIDENTIA_SERVICE_AUTH_ENABLED:false}
+  webhooks:
+    batch-size: ${EVIDENTIA_WEBHOOK_BATCH_SIZE:50}
+    lease-seconds: ${EVIDENTIA_WEBHOOK_LEASE_SECONDS:30}
+    poll-delay-ms: ${EVIDENTIA_WEBHOOK_POLL_DELAY_MS:5000}
 
 logging:
   level:

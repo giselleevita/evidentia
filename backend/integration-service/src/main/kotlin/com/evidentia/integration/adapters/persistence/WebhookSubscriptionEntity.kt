@@ -61,6 +61,15 @@ class WebhookDeliveryEntity(
     @Column(name = "last_response_body", columnDefinition = "TEXT")
     var lastResponseBody: String? = null,
 
+    @Column(name = "next_attempt_at", nullable = false)
+    var nextAttemptAt: Instant = Instant.now(),
+
+    @Column(name = "lease_until")
+    var leaseUntil: Instant? = null,
+
+    @Column(name = "lease_owner")
+    var leaseOwner: String? = null,
+
     @Column(name = "delivered_at")
     var deliveredAt: Instant? = null,
 
