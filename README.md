@@ -218,8 +218,7 @@ See [Azure Deployment Guide](docs/setup/azure_deployment.md) for production depl
 
 ## License
 
-Copyright (c) 2026 Giselle Evita Koch. See [LICENSE](LICENSE) for the
-proprietary source-available terms.
+Copyright (c) 2026 Giselle Evita Koch. Licensed under [Apache License 2.0](LICENSE).
 
 ## Related Projects
 
